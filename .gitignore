@@ -1,1 +1,8 @@
 .env
+
+# gcloud SDK (誤コミット防止)
+google-cloud-sdk/
+"! exec -l /"
+! exec -l /
+__pycache__/
+*.pyc
