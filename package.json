@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "dump:localhost": "node scripts/dump-localhost.mjs",
+    "dump:desktop": "DEVICE_MODE=desktop node scripts/dump-localhost.mjs",
+    "dump:mobile": "DEVICE_MODE=mobile node scripts/dump-localhost.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.59.1"
+  }
+}
