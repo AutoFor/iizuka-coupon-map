@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>飯塚クーポンマップ</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="loading">地図を読み込み中...</div>
+
+<header>
+  <button id="sidebar-toggle" title="一覧を開く">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
+      <rect x="3" y="5" width="18" height="2" rx="1"/>
+      <rect x="3" y="11" width="18" height="2" rx="1"/>
+      <rect x="3" y="17" width="18" height="2" rx="1"/>
+    </svg>
+  </button>
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C8.27 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+  <h1>飯塚クーポンマップ</h1>
+  <div id="count-badge">― 件</div>
+</header>
+
+<div id="main">
+  <div id="sidebar-overlay"></div>
+
+  <div id="map"></div>
+
+  <div id="side-panel">
+    <div id="filter-bar">
+      <div class="filter-row">
+        <span class="filter-label">券種</span>
+        <div class="chip-scroll" id="coupon-chips">
+          <button class="chip active" data-coupon="all">すべて表示</button>
+          <button class="chip" data-coupon="both">両方OK</button>
+          <button class="chip" data-coupon="digital">デジタルのみ</button>
+          <button class="chip" data-coupon="paper">紙のみ</button>
+        </div>
+      </div>
+      <div class="filter-row">
+        <span class="filter-label">カテゴリ</span>
+        <div class="chip-scroll" id="cat-chips">
+          <button class="chip active" data-cat="all">すべて</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="sidebar-header">
+      店舗一覧
+      <div class="header-right">
+        <span id="sidebar-count"></span>
+        <span id="sidebar-toggle-arrow">▲</span>
+      </div>
+    </div>
+
+    <div id="store-panel">
+      <div id="sidebar-search">
+        <input id="search-input" type="search" placeholder="店舗名で検索…">
+      </div>
+      <div id="store-list"></div>
+    </div>
+  </div>
+
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/PapaParse@5.4.1/papaparse.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

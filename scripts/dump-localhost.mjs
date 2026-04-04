@@ -1,0 +1,151 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { chromium, devices } from 'playwright';
+
+const targetUrl = process.env.TARGET_URL || 'http://127.0.0.1:18080';
+const outputRootDir = path.resolve(process.cwd(), 'playwright-output');
+const deviceMode = process.env.DEVICE_MODE || 'both';
+const captureScreenshot = process.env.CAPTURE_SCREENSHOT !== 'false';
+
+const profiles = [
+  {
+    name: 'desktop',
+    contextOptions: {
+      viewport: { width: 1440, height: 1024 },
+      userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36',
+    },
+  },
+  {
+    name: 'mobile',
+    contextOptions: {
+      ...devices['iPhone 14'],
+    },
+  },
+];
+
+const selectedProfiles = profiles.filter((profile) => {
+  if (deviceMode === 'both') return true;
+  return profile.name === deviceMode;
+});
+
+if (selectedProfiles.length === 0) {
+  throw new Error(`Unsupported DEVICE_MODE: ${deviceMode}`);
+}
+
+const browser = await chromium.launch({ headless: true });
+const results = [];
+
+for (const profile of selectedProfiles) {
+  const outputDir = path.join(outputRootDir, profile.name);
+  const context = await browser.newContext(profile.contextOptions);
+  const page = await context.newPage();
+
+  const consoleEntries = [];
+  const pageErrors = [];
+
+  page.on('console', async (msg) => {
+    const values = await Promise.all(
+      msg.args().map(async (arg) => {
+        try {
+          return await arg.jsonValue();
+        } catch {
+          return String(arg);
+        }
+      })
+    );
+
+    consoleEntries.push({
+      type: msg.type(),
+      text: msg.text(),
+      location: msg.location(),
+      args: values,
+    });
+  });
+
+  page.on('pageerror', (error) => {
+    pageErrors.push({
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+    });
+  });
+
+  await page.goto(targetUrl, { waitUntil: 'domcontentloaded' });
+  await page.waitForTimeout(3000);
+
+  const assetUrls = await page.evaluate(() => ({
+    stylesheets: Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
+      .map((node) => node.href)
+      .filter(Boolean),
+    scripts: Array.from(document.querySelectorAll('script[src]'))
+      .map((node) => node.src)
+      .filter(Boolean),
+  }));
+
+  const fetchText = async (url) => {
+    try {
+      const response = await fetch(url);
+      return {
+        url,
+        ok: response.ok,
+        status: response.status,
+        content: await response.text(),
+      };
+    } catch (error) {
+      return {
+        url,
+        ok: false,
+        status: null,
+        error: error instanceof Error ? error.message : String(error),
+        content: '',
+      };
+    }
+  };
+
+  const stylesheets = await Promise.all(assetUrls.stylesheets.map(fetchText));
+  const scripts = await Promise.all(assetUrls.scripts.map(fetchText));
+
+  const html = await page.content();
+  const title = await page.title();
+  const finalUrl = page.url();
+
+  await fs.mkdir(outputDir, { recursive: true });
+  if (captureScreenshot) {
+    await page.screenshot({
+      path: path.join(outputDir, 'screenshot.png'),
+      fullPage: false,
+    });
+  }
+  await fs.writeFile(path.join(outputDir, 'page.html'), html, 'utf8');
+  await fs.writeFile(path.join(outputDir, 'styles.json'), JSON.stringify(stylesheets, null, 2), 'utf8');
+  await fs.writeFile(path.join(outputDir, 'scripts.json'), JSON.stringify(scripts, null, 2), 'utf8');
+  await fs.writeFile(
+    path.join(outputDir, 'console.json'),
+    JSON.stringify({ consoleEntries, pageErrors }, null, 2),
+    'utf8'
+  );
+
+  const summary = {
+    profile: profile.name,
+    targetUrl,
+    finalUrl,
+    title,
+    viewport: page.viewportSize(),
+    htmlLength: html.length,
+    stylesheetCount: stylesheets.length,
+    scriptCount: scripts.length,
+    consoleCount: consoleEntries.length,
+    pageErrorCount: pageErrors.length,
+    screenshot: captureScreenshot ? 'screenshot.png' : null,
+  };
+
+  await fs.writeFile(path.join(outputDir, 'summary.json'), JSON.stringify(summary, null, 2), 'utf8');
+  results.push(summary);
+
+  await context.close();
+}
+
+await fs.writeFile(path.join(outputRootDir, 'summary.json'), JSON.stringify(results, null, 2), 'utf8');
+console.log(JSON.stringify({ outputRootDir, results }, null, 2));
+
+await browser.close();
