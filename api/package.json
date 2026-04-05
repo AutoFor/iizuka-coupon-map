@@ -1,0 +1,16 @@
+{
+  "name": "iizuka-coupon-map-api",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/functions/*.js",
+  "type": "module",
+  "scripts": {
+    "start": "func start"
+  },
+  "dependencies": {
+    "@azure/communication-email": "^1.0.0",
+    "@azure/functions": "^4.8.0",
+    "@azure/identity": "^4.11.0",
+    "@azure/keyvault-secrets": "^4.10.0"
+  }
+}

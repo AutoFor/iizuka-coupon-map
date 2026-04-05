@@ -19,6 +19,7 @@ let markerMap = new Map();
 const SIDEBAR_PAGE_SIZE = 100;
 let visibleStoreCount = SIDEBAR_PAGE_SIZE;
 let selectedStoreId = null;
+const CONTACT_API_URL = window.APP_CONFIG?.contactApiUrl || '/api/contact';
 
 // ── Map ──────────────────────────────────────────────────────────────────────
 log.info('Leaflet マップ初期化中...');
@@ -192,42 +193,18 @@ function closeSidebar() {
   setTimeout(() => map.invalidateSize(), 310);
 }
 
-let activeModalId = null;
-
-function closeHeaderMenu() {
-  const menu = document.getElementById('header-menu-list');
-  const toggle = document.getElementById('menu-toggle');
-  menu.hidden = true;
-  toggle.setAttribute('aria-expanded', 'false');
-}
-
-function openHeaderMenu() {
-  const menu = document.getElementById('header-menu-list');
-  const toggle = document.getElementById('menu-toggle');
-  menu.hidden = false;
-  toggle.setAttribute('aria-expanded', 'true');
-}
-
-function openModal(modalId) {
-  const modal = document.getElementById(modalId);
-  const backdrop = document.getElementById('modal-backdrop');
-  if (!modal || !backdrop) return;
-  activeModalId = modalId;
-  modal.hidden = false;
-  backdrop.hidden = false;
+function openContactModal() {
+  document.getElementById('contact-modal').hidden = false;
+  document.getElementById('contact-modal-backdrop').hidden = false;
   document.body.style.overflow = 'hidden';
-  closeHeaderMenu();
+  log.event('お問い合わせモーダルを開く');
 }
 
-function closeModal() {
-  const backdrop = document.getElementById('modal-backdrop');
-  if (activeModalId) {
-    const modal = document.getElementById(activeModalId);
-    if (modal) modal.hidden = true;
-  }
-  activeModalId = null;
-  if (backdrop) backdrop.hidden = true;
+function closeContactModal() {
+  document.getElementById('contact-modal').hidden = true;
+  document.getElementById('contact-modal-backdrop').hidden = true;
   document.body.style.overflow = '';
+  log.event('お問い合わせモーダルを閉じる');
 }
 
 // ── Event listeners ───────────────────────────────────────────────────────────
@@ -239,23 +216,12 @@ document.getElementById('search-input').addEventListener('input', e => {
   applyFilters();
 });
 
-document.getElementById('sidebar-toggle').addEventListener('click', () => {
-  const closed = document.getElementById('side-panel').classList.contains('closed');
-  log.event(`sidebar-toggle クリック (現在: ${closed ? 'closed' : 'open'})`);
-  closed ? openSidebar() : closeSidebar();
-});
-
 document.getElementById('sidebar-header').addEventListener('click', () => {
   if (!isMobile()) return;
   const expanded = document.getElementById('store-panel').classList.toggle('expanded');
   document.getElementById('sidebar-header').classList.toggle('expanded-arrow', expanded);
   log.event(`sidebar-header タップ → store-panel ${expanded ? '展開' : '折りたたみ'}`);
   setTimeout(() => map.invalidateSize(), 320);
-});
-
-document.getElementById('list-fab')?.addEventListener('click', () => {
-  log.event('list-fab クリック');
-  openSidebar();
 });
 
 document.getElementById('sidebar-overlay').addEventListener('click', () => {
@@ -275,61 +241,53 @@ document.getElementById('load-more-button')?.addEventListener('click', () => {
   renderSidebar();
 });
 
-document.getElementById('menu-toggle').addEventListener('click', e => {
-  e.stopPropagation();
-  const expanded = document.getElementById('menu-toggle').getAttribute('aria-expanded') === 'true';
-  expanded ? closeHeaderMenu() : openHeaderMenu();
-});
-
-document.getElementById('header-menu-list').addEventListener('click', e => {
-  const btn = e.target.closest('.menu-item');
-  if (!btn) return;
-  openModal(btn.dataset.modal);
-});
-
-document.querySelectorAll('[data-close-modal]').forEach(btn => {
-  btn.addEventListener('click', closeModal);
-});
-
-document.getElementById('modal-backdrop').addEventListener('click', closeModal);
-
-document.addEventListener('click', e => {
-  const menu = document.querySelector('.header-menu');
-  if (menu && !menu.contains(e.target)) closeHeaderMenu();
-});
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    closeHeaderMenu();
-    closeModal();
-  }
-});
+document.getElementById('contact-modal-open')?.addEventListener('click', openContactModal);
+document.getElementById('contact-modal-close')?.addEventListener('click', closeContactModal);
+document.getElementById('contact-modal-backdrop')?.addEventListener('click', closeContactModal);
 
 document.getElementById('contact-form')?.addEventListener('submit', e => {
   e.preventDefault();
 
+  const submitButton = e.currentTarget.querySelector('button[type="submit"]');
   const name = document.getElementById('contact-name')?.value.trim() || '';
   const email = document.getElementById('contact-email')?.value.trim() || '';
   const message = document.getElementById('contact-message')?.value.trim() || '';
+  const note = document.getElementById('contact-note');
 
   if (!message) {
-    document.getElementById('contact-note').textContent = 'お問い合わせ内容を入力してください。';
+    note.textContent = 'お問い合わせ内容を入力してください。';
     return;
   }
 
-  const subject = '飯塚クーポンマップについてのお問い合わせ';
-  const body = [
-    '飯塚クーポンマップについて問い合わせます。',
-    '',
-    `お名前: ${name || '未入力'}`,
-    `メールアドレス: ${email || '未入力'}`,
-    '',
-    'お問い合わせ内容:',
-    message,
-  ].join('\n');
+  note.textContent = '送信中です。しばらくお待ちください。';
+  submitButton.disabled = true;
 
-  window.location.href = `mailto:seiya-kawashima@autofor.co.jp?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  document.getElementById('contact-note').textContent = 'メールアプリを開けない場合は、宛先を手動でコピーしてください。';
+  fetch(CONTACT_API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, message }),
+  })
+    .then(async response => {
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.error || '送信に失敗しました。');
+      }
+      document.getElementById('contact-form').reset();
+      note.textContent = 'お問い合わせを送信しました。通常は 2 営業日以内に確認します。';
+    })
+    .catch(error => {
+      log.error('お問い合わせ送信失敗', error);
+      note.textContent = error.message || '送信に失敗しました。時間をおいて再度お試しください。';
+    })
+    .finally(() => {
+      submitButton.disabled = false;
+    });
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && !document.getElementById('contact-modal').hidden) {
+    closeContactModal();
+  }
 });
 
 // ── Filter accordion ──────────────────────────────────────────────────────────
@@ -339,7 +297,7 @@ function toggleExpand(triggerId, expandId) {
   const willOpen = !expand.classList.contains('open');
 
   // 他方を閉じる
-  ['coupon', 'cat'].forEach(key => {
+  ['coupon', 'cat', 'site'].forEach(key => {
     if (triggerId !== `${key}-trigger-row`) {
       document.getElementById(`${key}-trigger-row`).classList.remove('open');
       document.getElementById(`${key}-expand`).classList.remove('open');
@@ -356,6 +314,9 @@ document.getElementById('coupon-trigger-row').addEventListener('click', () => {
 });
 document.getElementById('cat-trigger-row').addEventListener('click', () => {
   toggleExpand('cat-trigger-row', 'cat-expand');
+});
+document.getElementById('site-trigger-row').addEventListener('click', () => {
+  toggleExpand('site-trigger-row', 'site-expand');
 });
 
 // ── Coupon chip click ─────────────────────────────────────────────────────────

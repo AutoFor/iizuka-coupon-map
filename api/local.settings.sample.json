@@ -1,0 +1,11 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "KEY_VAULT_URL": "https://<your-key-vault-name>.vault.azure.net/",
+    "ACS_EMAIL_CONNECTION_STRING_SECRET_NAME": "ACS-EMAIL-CONNECTION-STRING",
+    "ACS_EMAIL_SENDER_SECRET_NAME": "ACS-EMAIL-SENDER",
+    "CONTACT_TO_EMAIL_SECRET_NAME": "CONTACT-TO-EMAIL"
+  }
+}
