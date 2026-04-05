@@ -41,27 +41,20 @@ async function runCategoryFilterTest(page, profileName, outputDir) {
   // 初期件数を取得
   test.initialCount = await page.$eval('#count-badge', el => el.textContent.trim());
 
-  if (profileName === 'mobile') {
-    // トリガー行をタップ → シートを開く
-    await page.click('#cat-trigger-row');
-    await page.waitForSelector('#cat-sheet.open', { timeout: 3000 });
-    test.sheetOpened = true;
+  // トリガー行をクリック → シートを開く（モバイル・デスクトップ共通）
+  await page.click('#cat-trigger-row');
+  await page.waitForSelector('#cat-sheet.open', { timeout: 3000 });
+  test.sheetOpened = true;
 
-    // グルメ・飲食 ボタンをタップ
-    const chip = await page.$(`#cat-sheet-chips .chip[data-cat="${TEST_CATEGORY}"]`);
-    if (!chip) throw new Error(`シートにカテゴリチップが見つかりません: ${TEST_CATEGORY}`);
-    await chip.click();
+  // グルメ・飲食 ボタンをクリック
+  const chip = await page.$(`#cat-sheet-chips .chip[data-cat="${TEST_CATEGORY}"]`);
+  if (!chip) throw new Error(`シートにカテゴリチップが見つかりません: ${TEST_CATEGORY}`);
+  await chip.click();
 
-    // シートを閉じる
-    await page.click('#cat-sheet-close');
-    await page.waitForSelector('#cat-sheet.open', { state: 'hidden', timeout: 3000 });
-    test.sheetClosed = true;
-  } else {
-    // デスクトップ: filter-bar のチップを直接クリック
-    const chip = await page.$(`#cat-chips .chip[data-cat="${TEST_CATEGORY}"]`);
-    if (!chip) throw new Error(`カテゴリチップが見つかりません: ${TEST_CATEGORY}`);
-    await chip.click();
-  }
+  // シートを閉じる
+  await page.click('#cat-sheet-close');
+  await page.waitForSelector('#cat-sheet.open', { state: 'hidden', timeout: 3000 });
+  test.sheetClosed = true;
 
   await page.waitForTimeout(500);
 

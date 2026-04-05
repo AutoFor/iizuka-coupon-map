@@ -256,9 +256,10 @@ header h1 { font-size: 16px; font-weight: 600; }
 }
 #loading.hidden { display: none; }
 
-/* ── Category trigger row (mobile only) ── */
+/* ── Category trigger row ── */
+#cat-filter-row { display: none; }
 #cat-trigger-row {
-  display: none;
+  display: flex;
   cursor: pointer;
   gap: 6px;
   -webkit-tap-highlight-color: transparent;
@@ -351,9 +352,6 @@ header h1 { font-size: 16px; font-weight: 600; }
     overflow: hidden;
   }
   #side-panel.closed { width: 100%; }
-
-  #cat-filter-row { display: none; }
-  #cat-trigger-row { display: flex; }
 
   #sidebar-toggle-arrow { display: inline; }
   #sidebar-header.expanded-arrow #sidebar-toggle-arrow { transform: rotate(180deg); }
