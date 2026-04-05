@@ -41,31 +41,24 @@ async function runCategoryFilterTest(page, profileName, outputDir) {
   // 初期件数を取得
   test.initialCount = await page.$eval('#count-badge', el => el.textContent.trim());
 
-  // トリガー行をクリック → シートを開く（モバイル・デスクトップ共通）
+  // トリガー行をクリック → アコーディオン展開
   await page.click('#cat-trigger-row');
-  await page.waitForSelector('#cat-sheet.open', { timeout: 3000 });
-  test.sheetOpened = true;
+  await page.waitForSelector('#cat-expand.open', { timeout: 3000 });
+  test.expandOpened = true;
 
   // グルメ・飲食 ボタンをクリック
   const chip = await page.$(`#cat-sheet-chips .chip[data-cat="${TEST_CATEGORY}"]`);
-  if (!chip) throw new Error(`シートにカテゴリチップが見つかりません: ${TEST_CATEGORY}`);
+  if (!chip) throw new Error(`カテゴリチップが見つかりません: ${TEST_CATEGORY}`);
   await chip.click();
-
-  // シートを閉じる
-  await page.click('#cat-sheet-close');
-  await page.waitForSelector('#cat-sheet.open', { state: 'hidden', timeout: 3000 });
-  test.sheetClosed = true;
 
   await page.waitForTimeout(500);
 
   // フィルター後の件数
   test.filteredCount = await page.$eval('#count-badge', el => el.textContent.trim());
 
-  // モバイル: トリガーラベルが更新されているか
-  if (profileName === 'mobile') {
-    test.triggerLabel = await page.$eval('#cat-trigger-label', el => el.textContent.trim());
-    test.triggerLabelOk = test.triggerLabel === TEST_CATEGORY;
-  }
+  // トリガーラベルが更新されているか（モバイル・デスクトップ共通）
+  test.triggerLabel = await page.$eval('#cat-trigger-label', el => el.textContent.trim());
+  test.triggerLabelOk = test.triggerLabel === TEST_CATEGORY;
 
   // 店舗一覧のカテゴリタグがすべて対象カテゴリか検証
   const catTags = await page.$$eval('.store-tag.cat', tags => tags.map(t => t.textContent.trim()));
@@ -78,7 +71,7 @@ async function runCategoryFilterTest(page, profileName, outputDir) {
   test.pass =
     test.countChanged &&
     test.allCatTagsMatch &&
-    (profileName !== 'mobile' || test.triggerLabelOk);
+    test.triggerLabelOk;
 
   // フィルター後スクリーンショット
   if (captureScreenshot) {

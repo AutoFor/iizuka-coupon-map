@@ -46,15 +46,21 @@ header h1 { font-size: 16px; font-weight: 600; }
 #filter-bar {
   background: white;
   flex-shrink: 0;
+  border-bottom: 1px solid #e0e0e0;
 }
 
-.filter-row {
+/* ── Filter trigger rows ── */
+.filter-trigger {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  border-top: 1px solid #f0f0f0;
 }
-.filter-row + .filter-row { border-top: 1px solid #f0f0f0; }
+.filter-trigger:first-child { border-top: none; }
 
 .filter-label {
   font-size: 11px;
@@ -63,18 +69,37 @@ header h1 { font-size: 16px; font-weight: 600; }
   flex-shrink: 0;
 }
 
-.chip-scroll {
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  padding-bottom: 2px;
-  min-width: 0;
-  flex: 1;
+#coupon-trigger-label,
+#cat-trigger-label {
+  font-size: 12px;
+  color: #333;
+  font-weight: 500;
 }
-.chip-scroll::-webkit-scrollbar { display: none; }
 
+.filter-chevron {
+  margin-left: auto;
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+.filter-trigger.open .filter-chevron { transform: rotate(180deg); }
+
+/* ── Filter expand panel (アコーディオン) ── */
+.filter-expand {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.25s ease;
+  background: #fafafa;
+}
+.filter-expand.open { max-height: 300px; }
+
+.filter-expand-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 16px 12px;
+}
+
+/* ── Chips ── */
 .chip {
   border: 1.5px solid #ddd;
   background: white;
@@ -93,13 +118,9 @@ header h1 { font-size: 16px; font-weight: 600; }
 .chip.active { color: white; border-color: transparent; background: #333; }
 
 /* 券種 active colors */
-#coupon-chips .chip[data-coupon="all"].active,
 #coupon-sheet-chips .chip[data-coupon="all"].active     { background: #555; }
-#coupon-chips .chip[data-coupon="both"].active,
 #coupon-sheet-chips .chip[data-coupon="both"].active    { background: #16a34a; }
-#coupon-chips .chip[data-coupon="digital"].active,
 #coupon-sheet-chips .chip[data-coupon="digital"].active { background: #1a73e8; }
-#coupon-chips .chip[data-coupon="paper"].active,
 #coupon-sheet-chips .chip[data-coupon="paper"].active   { background: #b45309; }
 
 /* ── Main area ── */
@@ -116,7 +137,6 @@ header h1 { font-size: 16px; font-weight: 600; }
   width: 300px;
   flex-shrink: 0;
   background: white;
-  border-right: none;
   border-left: 1px solid #e0e0e0;
   display: flex;
   flex-direction: column;
@@ -124,7 +144,6 @@ header h1 { font-size: 16px; font-weight: 600; }
   transition: width 0.3s ease;
 }
 #side-panel.closed { width: 0; }
-
 
 #sidebar-overlay {
   display: none;
@@ -226,7 +245,7 @@ header h1 { font-size: 16px; font-weight: 600; }
   overflow: hidden;
   line-height: 1.5;
 }
-.store-item-tags { display: flex; gap: 4px; }
+.store-item-tags { display: flex; gap: 4px; flex-wrap: wrap; }
 .store-tag {
   border-radius: 8px;
   padding: 1px 7px;
@@ -272,104 +291,20 @@ header h1 { font-size: 16px; font-weight: 600; }
 }
 #loading.hidden { display: none; }
 
-/* ── Coupon / Category trigger rows ── */
-#cat-filter-row { display: none; }
-#coupon-trigger-row,
-#cat-trigger-row {
-  display: flex;
-  cursor: pointer;
-  gap: 6px;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-}
-#coupon-trigger-label,
-#cat-trigger-label {
-  font-size: 12px;
-  color: #333;
-  font-weight: 500;
-}
-
-/* ── Coupon / Category bottom sheets (共通) ── */
-#coupon-sheet-overlay,
-#cat-sheet-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  z-index: 1000;
-}
-#coupon-sheet-overlay.open,
-#cat-sheet-overlay.open { display: block; }
-
-#coupon-sheet,
-#cat-sheet {
-  display: none;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: white;
-  border-radius: 16px 16px 0 0;
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
-  z-index: 1001;
-  max-height: 60dvh;
-  overflow-y: auto;
-}
-#coupon-sheet.open,
-#cat-sheet.open { display: block; }
-
-#coupon-sheet-header,
-#cat-sheet-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 16px 12px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #333;
-  border-bottom: 1px solid #f0f0f0;
-  position: sticky;
-  top: 0;
-  background: white;
-}
-#coupon-sheet-close,
-#cat-sheet-close {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #666;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  -webkit-tap-highlight-color: transparent;
-}
-
-#coupon-sheet-chips,
-#cat-sheet-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 14px 16px 24px;
-}
-#cat-sheet-chips .chip { flex-shrink: 0; }
-
 /* ── Mobile (末尾に置くことでデスクトップルールより優先される) ── */
 @media (max-width: 768px) {
-  /* map が上・side-panel が下の縦並び */
   #main { flex-direction: column; }
 
-  /* map には最低限の高さを保証 */
   #map {
     flex: 1 1 0;
     min-height: 35dvh;
   }
 
-  /* サイドパネルは下部に固定 */
   #side-panel {
     flex: 0 0 auto;
     width: 100%;
     max-height: 65dvh;
-    border-right: none;
+    border-left: none;
     border-top: 1px solid #e0e0e0;
     border-radius: 12px 12px 0 0;
     box-shadow: 0 -2px 12px rgba(0,0,0,0.12);
@@ -381,11 +316,10 @@ header h1 { font-size: 16px; font-weight: 600; }
   #sidebar-toggle-arrow { display: inline; }
   #sidebar-header.expanded-arrow #sidebar-toggle-arrow { transform: rotate(180deg); }
 
-  /* 店舗一覧: デフォルト1件表示、展開で35dvh */
   #store-panel {
     flex: none;
     overflow: hidden;
-    height: 7.5rem; /* 検索バー(~48px) + 店舗1件(~72px) */
+    height: 7.5rem;
     transition: height 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
   }
   #store-panel.expanded { height: 35dvh; }
