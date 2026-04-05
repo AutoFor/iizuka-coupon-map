@@ -115,12 +115,65 @@
     </p>
     <form id="contact-form" class="contact-form">
       <label>
+        お問い合わせ種別
+        <select id="contact-applicant-type" name="applicantType" required>
+          <option value="">選択してください</option>
+          <option value="individual">個人</option>
+          <option value="corporate">法人</option>
+        </select>
+      </label>
+      <label>
+        お問い合わせカテゴリ
+        <select id="contact-category" name="category" required>
+          <option value="">選択してください</option>
+          <option value="新規掲載">新規掲載</option>
+          <option value="掲載情報の修正">掲載情報の修正</option>
+          <option value="掲載削除">掲載削除</option>
+          <option value="サービスについて">サービスについて</option>
+          <option value="不具合報告">不具合報告</option>
+          <option value="ご要望・ご提案">ご要望・ご提案</option>
+          <option value="その他">その他</option>
+        </select>
+      </label>
+      <label id="contact-store-name-field" hidden>
+        対象の店舗名
+        <input id="contact-store-name" name="storeName" type="text" placeholder="例: ○○食堂">
+      </label>
+      <label id="contact-fix-detail-field" hidden>
+        どこを直したいか
+        <input id="contact-fix-detail" name="fixDetail" type="text" placeholder="例: 営業時間 / 住所 / 券種 / 紹介文">
+      </label>
+      <label id="contact-delete-reason-field" hidden>
+        削除理由
+        <input id="contact-delete-reason" name="deleteReason" type="text" placeholder="例: 閉店 / 掲載終了 / 情報削除希望">
+      </label>
+      <label id="contact-new-store-name-field" hidden>
+        新規店舗名
+        <input id="contact-new-store-name" name="newStoreName" type="text" placeholder="例: ○○カフェ">
+      </label>
+      <label id="contact-store-url-field" hidden>
+        店舗HP・SNS・Google Maps など
+        <input id="contact-store-url" name="storeUrl" type="url" placeholder="https://example.com">
+      </label>
+      <label id="contact-store-summary-field" hidden>
+        店舗概要
+        <textarea id="contact-store-summary" name="storeSummary" rows="3" placeholder="業種や掲載したい内容をご記入ください"></textarea>
+      </label>
+      <label id="contact-company-field" hidden>
+        御社名
+        <input id="contact-company" name="company" type="text" placeholder="例: AutoFor株式会社">
+      </label>
+      <label id="contact-reply-email-field" hidden>
+        御社の返信用メールアドレス
+        <input id="contact-reply-email" name="replyEmail" type="email" placeholder="company@example.com">
+      </label>
+      <label>
         お名前
-        <input id="contact-name" name="name" type="text" placeholder="例: 山田 太郎">
+        <input id="contact-name" name="name" type="text" placeholder="例: 山田 太郎" required>
       </label>
       <label>
         メールアドレス
-        <input id="contact-email" name="email" type="email" placeholder="example@example.com">
+        <input id="contact-email" name="email" type="email" placeholder="example@example.com" required>
       </label>
       <label>
         お問い合わせ内容
