@@ -18,6 +18,7 @@ let filteredStores = [];
 let markerMap = new Map();
 const SIDEBAR_PAGE_SIZE = 100;
 let visibleStoreCount = SIDEBAR_PAGE_SIZE;
+let selectedStoreId = null;
 
 // ── Map ──────────────────────────────────────────────────────────────────────
 log.info('Leaflet マップ初期化中...');
@@ -50,14 +51,19 @@ function applyFilters() {
 
   clusterGroup.clearLayers();
   markerMap.clear();
+  const bounds = map.getBounds();
 
   const before = allStores.length;
   filteredStores = allStores.filter(s => {
     if (activeCoupon !== 'all' && s.券種 !== activeCoupon) return false;
     if (activeGroups.size > 0 && !activeGroups.has(s.display_category)) return false;
     if (searchQuery && !s.店舗名称.includes(searchQuery)) return false;
+    if (!bounds.contains([s.lat, s.lng])) return false;
     return true;
   });
+  if (selectedStoreId && !filteredStores.some(s => s._id === selectedStoreId)) {
+    selectedStoreId = null;
+  }
   log.info(`フィルター結果: ${before}件 → ${filteredStores.length}件`);
 
   let markerErrors = 0;
@@ -93,8 +99,13 @@ function applyFilters() {
         ${s.エリア ? `<span class="popup-tag area">${s.エリア}</span>` : ''}
       </div>
       ${linkItems.length ? `<div class="popup-links">${linkItems.join('')}</div>` : ''}`);
+    marker.on('click', () => {
+      selectedStoreId = s._id;
+      log.event(`地図上で店舗選択: ${s.店舗名称}`);
+      renderSidebar();
+    });
     clusterGroup.addLayer(marker);
-    markerMap.set(i, marker);
+    markerMap.set(s._id, marker);
   });
 
   if (markerErrors > 0) log.warn(`座標エラー ${markerErrors}件スキップ`);
@@ -110,14 +121,20 @@ function renderSidebar() {
   log.info(`renderSidebar: ${filteredStores.length}件 描画`);
   const list = document.getElementById('store-list');
   const loadMoreButton = document.getElementById('load-more-button');
+  const orderedStores = selectedStoreId
+    ? [
+        ...filteredStores.filter(s => s._id === selectedStoreId),
+        ...filteredStores.filter(s => s._id !== selectedStoreId),
+      ]
+    : filteredStores;
   list.innerHTML = '';
   document.getElementById('sidebar-count').textContent = `${filteredStores.length}件`;
-  filteredStores.slice(0, visibleStoreCount).forEach((s, i) => {
+  orderedStores.slice(0, visibleStoreCount).forEach((s, i) => {
     const couponTags = s.券種 === 'both'
       ? `<span class="store-tag digital">デジタル</span><span class="store-tag paper">紙</span>`
       : `<span class="store-tag ${s.券種}">${s.券種 === 'digital' ? 'デジタル' : '紙'}</span>`;
     const div = document.createElement('div');
-    div.className = 'store-item';
+    div.className = `store-item${s._id === selectedStoreId ? ' active' : ''}`;
     div.innerHTML = `
       <div class="store-item-name">${s.店舗名称}</div>
       <div class="store-item-sub">${s.formatted_address || s.エリア || ''}</div>
@@ -128,6 +145,7 @@ function renderSidebar() {
       </div>`;
     const onStoreClick = (e) => {
       e.preventDefault();
+      selectedStoreId = s._id;
       log.event(`店舗クリック: [${i}] ${s.店舗名称} (lat:${s.lat}, lng:${s.lng})`);
       if (isMobile()) {
         log.info('モバイル: サイドバーを閉じる');
@@ -135,7 +153,7 @@ function renderSidebar() {
       }
       setTimeout(() => {
         map.setView([s.lat, s.lng], 17);
-        const marker = markerMap.get(i);
+        const marker = markerMap.get(s._id);
         if (marker) {
           marker.openPopup();
           log.info(`ポップアップ表示: ${s.店舗名称}`);
@@ -149,10 +167,10 @@ function renderSidebar() {
     list.appendChild(div);
   });
   if (loadMoreButton) {
-    const hasMore = visibleStoreCount < filteredStores.length;
+    const hasMore = visibleStoreCount < orderedStores.length;
     loadMoreButton.hidden = !hasMore;
     if (hasMore) {
-      loadMoreButton.textContent = `さらに表示 (${Math.min(SIDEBAR_PAGE_SIZE, filteredStores.length - visibleStoreCount)}件)`;
+      loadMoreButton.textContent = `さらに表示 (${Math.min(SIDEBAR_PAGE_SIZE, orderedStores.length - visibleStoreCount)}件)`;
     }
   }
   log.ok('renderSidebar 完了');
@@ -243,6 +261,12 @@ document.getElementById('list-fab')?.addEventListener('click', () => {
 document.getElementById('sidebar-overlay').addEventListener('click', () => {
   log.event('overlay クリック → closeSidebar');
   closeSidebar();
+});
+
+map.on('moveend zoomend', () => {
+  if (allStores.length === 0) return;
+  log.event('地図範囲変更 → applyFilters');
+  applyFilters();
 });
 
 document.getElementById('load-more-button')?.addEventListener('click', () => {
@@ -439,7 +463,7 @@ Papa.parse('csv/stores_merged.csv', {
 
     allStores = raw
       .filter(r => r.lat && r.lng && !isNaN(parseFloat(r.lat)))
-      .map(r => ({ ...r, lat: parseFloat(r.lat), lng: parseFloat(r.lng) }));
+      .map((r, index) => ({ ...r, _id: index, lat: parseFloat(r.lat), lng: parseFloat(r.lng) }));
 
     log.ok(`有効店舗数: ${allStores.length}件`);
     log.info('カラム一覧:', Object.keys(allStores[0] || {}));

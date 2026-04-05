@@ -296,6 +296,11 @@ header h1 {
 .store-item:active,
 .store-item:hover { background: #f0f6ff; }
 
+.store-item.active {
+  background: #e7f0ff;
+  box-shadow: inset 3px 0 0 #1a73e8;
+}
+
 .store-item-name {
   font-size: 13px;
   font-weight: 600;
