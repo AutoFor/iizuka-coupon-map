@@ -196,15 +196,38 @@ document.getElementById('sidebar-overlay').addEventListener('click', () => {
   closeSidebar();
 });
 
-document.getElementById('coupon-chips').addEventListener('click', e => {
-  const btn = e.target.closest('.chip');
-  if (!btn) return;
-  document.querySelectorAll('#coupon-chips .chip').forEach(c => c.classList.remove('active'));
-  btn.classList.add('active');
+function handleCouponChipClick(btn) {
   activeCoupon = btn.dataset.coupon;
+  ['coupon-chips', 'coupon-sheet-chips'].forEach(id => {
+    const c = document.getElementById(id);
+    if (!c) return;
+    c.querySelectorAll('.chip').forEach(el => el.classList.remove('active'));
+    const active = c.querySelector(`.chip[data-coupon="${activeCoupon}"]`);
+    if (active) active.classList.add('active');
+  });
+  updateCouponTriggerLabel();
   log.event(`券種フィルター変更: "${activeCoupon}"`);
   applyFilters();
+}
+
+document.getElementById('coupon-chips')?.addEventListener('click', e => {
+  const btn = e.target.closest('.chip');
+  if (btn) handleCouponChipClick(btn);
 });
+
+document.getElementById('coupon-sheet-chips').addEventListener('click', e => {
+  const btn = e.target.closest('.chip');
+  if (!btn) return;
+  handleCouponChipClick(btn);
+  closeCouponSheet();
+});
+
+document.getElementById('coupon-trigger-row').addEventListener('click', () => {
+  log.event('coupon-trigger-row クリック → openCouponSheet');
+  openCouponSheet();
+});
+document.getElementById('coupon-sheet-close').addEventListener('click', closeCouponSheet);
+document.getElementById('coupon-sheet-overlay').addEventListener('click', closeCouponSheet);
 
 function handleCatChipClick(btn, containerId) {
   const cat = btn.dataset.cat;
@@ -265,16 +288,25 @@ document.getElementById('cat-sheet-overlay').addEventListener('click', () => {
 
 log.ok('イベントリスナー登録完了');
 
-// ── Category sheet open/close ─────────────────────────────────────────────────
-function openCatSheet() {
-  document.getElementById('cat-sheet').classList.add('open');
-  document.getElementById('cat-sheet-overlay').classList.add('open');
+// ── Sheet open/close helpers ──────────────────────────────────────────────────
+function openSheet(id) {
+  document.getElementById(id).classList.add('open');
+  document.getElementById(id + '-overlay').classList.add('open');
 }
-function closeCatSheet() {
-  document.getElementById('cat-sheet').classList.remove('open');
-  document.getElementById('cat-sheet-overlay').classList.remove('open');
+function closeSheet(id) {
+  document.getElementById(id).classList.remove('open');
+  document.getElementById(id + '-overlay').classList.remove('open');
 }
+function openCatSheet()    { openSheet('cat-sheet'); }
+function closeCatSheet()   { closeSheet('cat-sheet'); }
+function openCouponSheet() { openSheet('coupon-sheet'); }
+function closeCouponSheet(){ closeSheet('coupon-sheet'); }
 
+const COUPON_LABELS = { all: 'すべて表示', both: '両方OK', digital: 'デジタルのみ', paper: '紙のみ' };
+
+function updateCouponTriggerLabel() {
+  document.getElementById('coupon-trigger-label').textContent = COUPON_LABELS[activeCoupon] || 'すべて表示';
+}
 function updateCatTriggerLabel() {
   const label = activeGroups.size === 0
     ? 'すべて'

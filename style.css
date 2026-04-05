@@ -93,10 +93,14 @@ header h1 { font-size: 16px; font-weight: 600; }
 .chip.active { color: white; border-color: transparent; background: #333; }
 
 /* 券種 active colors */
-#coupon-chips .chip[data-coupon="all"].active     { background: #555; }
-#coupon-chips .chip[data-coupon="both"].active    { background: #16a34a; }
-#coupon-chips .chip[data-coupon="digital"].active { background: #1a73e8; }
-#coupon-chips .chip[data-coupon="paper"].active   { background: #b45309; }
+#coupon-chips .chip[data-coupon="all"].active,
+#coupon-sheet-chips .chip[data-coupon="all"].active     { background: #555; }
+#coupon-chips .chip[data-coupon="both"].active,
+#coupon-sheet-chips .chip[data-coupon="both"].active    { background: #16a34a; }
+#coupon-chips .chip[data-coupon="digital"].active,
+#coupon-sheet-chips .chip[data-coupon="digital"].active { background: #1a73e8; }
+#coupon-chips .chip[data-coupon="paper"].active,
+#coupon-sheet-chips .chip[data-coupon="paper"].active   { background: #b45309; }
 
 /* ── Main area ── */
 #main {
@@ -268,8 +272,9 @@ header h1 { font-size: 16px; font-weight: 600; }
 }
 #loading.hidden { display: none; }
 
-/* ── Category trigger row ── */
+/* ── Coupon / Category trigger rows ── */
 #cat-filter-row { display: none; }
+#coupon-trigger-row,
 #cat-trigger-row {
   display: flex;
   cursor: pointer;
@@ -283,7 +288,8 @@ header h1 { font-size: 16px; font-weight: 600; }
   font-weight: 500;
 }
 
-/* ── Category bottom sheet ── */
+/* ── Coupon / Category bottom sheets (共通) ── */
+#coupon-sheet-overlay,
 #cat-sheet-overlay {
   display: none;
   position: fixed;
@@ -291,8 +297,10 @@ header h1 { font-size: 16px; font-weight: 600; }
   background: rgba(0,0,0,0.4);
   z-index: 1000;
 }
+#coupon-sheet-overlay.open,
 #cat-sheet-overlay.open { display: block; }
 
+#coupon-sheet,
 #cat-sheet {
   display: none;
   position: fixed;
@@ -306,8 +314,10 @@ header h1 { font-size: 16px; font-weight: 600; }
   max-height: 60dvh;
   overflow-y: auto;
 }
+#coupon-sheet.open,
 #cat-sheet.open { display: block; }
 
+#coupon-sheet-header,
 #cat-sheet-header {
   display: flex;
   align-items: center;
@@ -321,6 +331,7 @@ header h1 { font-size: 16px; font-weight: 600; }
   top: 0;
   background: white;
 }
+#coupon-sheet-close,
 #cat-sheet-close {
   background: none;
   border: none;
@@ -332,6 +343,7 @@ header h1 { font-size: 16px; font-weight: 600; }
   -webkit-tap-highlight-color: transparent;
 }
 
+#coupon-sheet-chips,
 #cat-sheet-chips {
   display: flex;
   flex-wrap: wrap;
