@@ -282,6 +282,7 @@ header h1 { font-size: 16px; font-weight: 600; }
   -webkit-tap-highlight-color: transparent;
   user-select: none;
 }
+#coupon-trigger-label,
 #cat-trigger-label {
   font-size: 12px;
   color: #333;
