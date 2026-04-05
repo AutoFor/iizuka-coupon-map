@@ -108,10 +108,12 @@ header h1 { font-size: 16px; font-weight: 600; }
 
 /* ── Side panel (desktop: left; mobile: bottom) ── */
 #side-panel {
+  order: -1;
   width: 300px;
   flex-shrink: 0;
   background: white;
-  border-right: 1px solid #e0e0e0;
+  border-right: none;
+  border-left: 1px solid #e0e0e0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
