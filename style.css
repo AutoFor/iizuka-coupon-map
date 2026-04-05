@@ -256,6 +256,77 @@ header h1 { font-size: 16px; font-weight: 600; }
 }
 #loading.hidden { display: none; }
 
+/* ── Category trigger row (mobile only) ── */
+#cat-trigger-row {
+  display: none;
+  cursor: pointer;
+  gap: 6px;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+#cat-trigger-label {
+  font-size: 12px;
+  color: #333;
+  font-weight: 500;
+}
+
+/* ── Category bottom sheet ── */
+#cat-sheet-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 1000;
+}
+#cat-sheet-overlay.open { display: block; }
+
+#cat-sheet {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+  z-index: 1001;
+  max-height: 60dvh;
+  overflow-y: auto;
+}
+#cat-sheet.open { display: block; }
+
+#cat-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 1px solid #f0f0f0;
+  position: sticky;
+  top: 0;
+  background: white;
+}
+#cat-sheet-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#cat-sheet-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 14px 16px 24px;
+}
+#cat-sheet-chips .chip { flex-shrink: 0; }
+
 /* ── Mobile (末尾に置くことでデスクトップルールより優先される) ── */
 @media (max-width: 768px) {
   /* map が上・side-panel が下の縦並び */
@@ -280,6 +351,9 @@ header h1 { font-size: 16px; font-weight: 600; }
     overflow: hidden;
   }
   #side-panel.closed { width: 100%; }
+
+  #cat-filter-row { display: none; }
+  #cat-trigger-row { display: flex; }
 
   #sidebar-toggle-arrow { display: inline; }
   #sidebar-header.expanded-arrow #sidebar-toggle-arrow { transform: rotate(180deg); }

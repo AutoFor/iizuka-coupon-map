@@ -204,36 +204,81 @@ document.getElementById('coupon-chips').addEventListener('click', e => {
   applyFilters();
 });
 
-document.getElementById('cat-chips').addEventListener('click', e => {
-  const btn = e.target.closest('.chip');
-  if (!btn) return;
+function handleCatChipClick(btn, containerId) {
   const cat = btn.dataset.cat;
   if (cat === 'all') {
     activeGroups.clear();
-    document.querySelectorAll('#cat-chips .chip').forEach(c => c.classList.remove('active'));
-    btn.classList.add('active');
     log.event('カテゴリフィルター: すべてクリア');
   } else {
-    document.querySelector('#cat-chips .chip[data-cat="all"]').classList.remove('active');
     if (activeGroups.has(cat)) {
       activeGroups.delete(cat);
-      btn.classList.remove('active');
       log.event(`カテゴリ解除: "${cat}"`);
     } else {
       activeGroups.add(cat);
-      btn.classList.add('active');
       log.event(`カテゴリ追加: "${cat}"`);
     }
-    if (activeGroups.size === 0) {
-      document.querySelector('#cat-chips .chip[data-cat="all"]').classList.add('active');
-      log.info('全カテゴリ解除 → "すべて" に戻す');
-    }
   }
+  // 両方のチップコンテナの active 状態を同期
+  ['cat-chips', 'cat-sheet-chips'].forEach(id => {
+    const container = document.getElementById(id);
+    container.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    if (activeGroups.size === 0) {
+      container.querySelector('.chip[data-cat="all"]').classList.add('active');
+    } else {
+      activeGroups.forEach(g => {
+        const c = container.querySelector(`.chip[data-cat="${g}"]`);
+        if (c) c.classList.add('active');
+      });
+    }
+  });
+  updateCatTriggerLabel();
   log.info('現在のactiveGroups:', [...activeGroups]);
   applyFilters();
+}
+
+document.getElementById('cat-chips').addEventListener('click', e => {
+  const btn = e.target.closest('.chip');
+  if (!btn) return;
+  handleCatChipClick(btn, 'cat-chips');
+});
+
+document.getElementById('cat-sheet-chips').addEventListener('click', e => {
+  const btn = e.target.closest('.chip');
+  if (!btn) return;
+  handleCatChipClick(btn, 'cat-sheet-chips');
+});
+
+document.getElementById('cat-trigger-row').addEventListener('click', () => {
+  log.event('cat-trigger-row タップ → openCatSheet');
+  openCatSheet();
+});
+document.getElementById('cat-sheet-close').addEventListener('click', () => {
+  log.event('cat-sheet-close → closeCatSheet');
+  closeCatSheet();
+});
+document.getElementById('cat-sheet-overlay').addEventListener('click', () => {
+  log.event('cat-sheet-overlay → closeCatSheet');
+  closeCatSheet();
 });
 
 log.ok('イベントリスナー登録完了');
+
+// ── Category sheet open/close ─────────────────────────────────────────────────
+function openCatSheet() {
+  document.getElementById('cat-sheet').classList.add('open');
+  document.getElementById('cat-sheet-overlay').classList.add('open');
+}
+function closeCatSheet() {
+  document.getElementById('cat-sheet').classList.remove('open');
+  document.getElementById('cat-sheet-overlay').classList.remove('open');
+}
+
+function updateCatTriggerLabel() {
+  const label = activeGroups.size === 0
+    ? 'すべて'
+    : [...activeGroups].join('・');
+  document.getElementById('cat-trigger-label').textContent = label;
+}
 
 // ── Build category chips ──────────────────────────────────────────────────────
 function buildCatChips(stores) {
@@ -245,15 +290,20 @@ function buildCatChips(stores) {
   });
   log.info('カテゴリ集計:', counts);
 
-  const container = document.getElementById('cat-chips');
   const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-  sorted.forEach(([cat, count]) => {
-    const btn = document.createElement('button');
-    btn.className = 'chip';
-    btn.dataset.cat = cat;
-    btn.textContent = `${cat} (${count})`;
-    container.appendChild(btn);
-  });
+
+  function addChips(container) {
+    sorted.forEach(([cat, count]) => {
+      const btn = document.createElement('button');
+      btn.className = 'chip';
+      btn.dataset.cat = cat;
+      btn.textContent = `${cat} (${count})`;
+      container.appendChild(btn);
+    });
+  }
+
+  addChips(document.getElementById('cat-chips'));
+  addChips(document.getElementById('cat-sheet-chips'));
   log.ok(`カテゴリチップ生成: ${sorted.length}種`);
 }
 

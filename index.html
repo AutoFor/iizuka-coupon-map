@@ -40,13 +40,21 @@
           <button class="chip" data-coupon="paper">紙のみ</button>
         </div>
       </div>
-      <div class="filter-row">
+      <div class="filter-row" id="cat-filter-row">
         <span class="filter-label">カテゴリ</span>
         <div class="chip-scroll" id="cat-chips">
           <button class="chip active" data-cat="all">すべて</button>
         </div>
       </div>
+      <!-- モバイル用カテゴリトリガー行 -->
+      <div class="filter-row" id="cat-trigger-row">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="12" y1="18" x2="20" y2="18"/></svg>
+        <span class="filter-label">カテゴリ</span>
+        <span id="cat-trigger-label">すべて</span>
+        <svg style="margin-left:auto;flex-shrink:0" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
     </div>
+
 
     <div id="sidebar-header">
       店舗一覧
@@ -65,6 +73,18 @@
   </div>
 
 
+</div>
+
+<!-- カテゴリボトムシート -->
+<div id="cat-sheet-overlay"></div>
+<div id="cat-sheet">
+  <div id="cat-sheet-header">
+    <span>カテゴリを選択</span>
+    <button id="cat-sheet-close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div id="cat-sheet-chips"></div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
