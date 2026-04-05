@@ -117,6 +117,7 @@ function renderSidebar() {
     div.innerHTML = `
       <div class="store-item-name">${s.店舗名称}</div>
       <div class="store-item-sub">${s.formatted_address || s.エリア || ''}</div>
+      ${s.description ? `<div class="store-item-desc">${s.description}</div>` : ''}
       <div class="store-item-tags">
         ${couponTags}
         ${s.display_category ? `<span class="store-tag cat">${s.display_category}</span>` : ''}

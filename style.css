@@ -212,6 +212,16 @@ header h1 { font-size: 16px; font-weight: 600; }
   text-overflow: ellipsis;
   margin-bottom: 4px;
 }
+.store-item-desc {
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.5;
+}
 .store-item-tags { display: flex; gap: 4px; }
 .store-tag {
   border-radius: 8px;
