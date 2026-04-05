@@ -1,4 +1,5 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Noto Sans JP', sans-serif;
@@ -6,6 +7,8 @@ body {
   flex-direction: column;
   height: 100dvh;
   overflow: hidden;
+  background: #f3f6fb;
+  color: #1f2937;
 }
 
 /* ── Header ── */
@@ -20,7 +23,12 @@ header {
   z-index: 200;
   flex-shrink: 0;
 }
-header h1 { font-size: 16px; font-weight: 600; }
+header h1 {
+  font-size: 16px;
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+}
 
 #sidebar-toggle {
   background: none;
@@ -39,7 +47,51 @@ header h1 { font-size: 16px; font-weight: 600; }
   border-radius: 12px;
   padding: 2px 10px;
   font-size: 13px;
-  margin-left: auto;
+}
+
+.header-menu {
+  position: relative;
+  flex-shrink: 0;
+}
+
+#menu-toggle {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.header-menu-list {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 170px;
+  background: white;
+  border: 1px solid #d7e1ef;
+  border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+  padding: 8px;
+  z-index: 260;
+}
+
+.menu-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font: inherit;
+  color: #1f2937;
+  cursor: pointer;
+}
+
+.menu-item:hover {
+  background: #f3f7fd;
 }
 
 /* ── Filter bar ── */
@@ -135,6 +187,7 @@ header h1 { font-size: 16px; font-weight: 600; }
 #side-panel {
   order: -1;
   width: 300px;
+  min-height: 0;
   flex-shrink: 0;
   background: white;
   border-left: 1px solid #e0e0e0;
@@ -205,6 +258,7 @@ header h1 { font-size: 16px; font-weight: 600; }
 #store-list {
   overflow-y: auto;
   flex: 1;
+  min-height: 0;
 }
 
 .store-item {
@@ -291,6 +345,154 @@ header h1 { font-size: 16px; font-weight: 600; }
 }
 #loading.hidden { display: none; }
 
+/* ── Modal ── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  z-index: 280;
+}
+
+.modal-sheet {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 290;
+}
+
+.modal-card {
+  width: min(560px, 100%);
+  max-height: min(88dvh, 860px);
+  overflow-y: auto;
+  background: rgba(255,255,255,0.98);
+  border: 1px solid #d7e1ef;
+  border-radius: 20px;
+  padding: 22px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.22);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.modal-header h2 {
+  font-size: 22px;
+}
+
+.modal-close {
+  border: 1px solid #d7e1ef;
+  background: white;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font: inherit;
+  color: #334155;
+  cursor: pointer;
+}
+
+.footer-copy {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #4b5563;
+}
+
+.footer-disclaimer {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fff7e8;
+  border: 1px solid #f3d7a1;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #8a5a00;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.footer-links a {
+  text-decoration: none;
+  color: #1a73e8;
+  background: #edf4ff;
+  border: 1px solid #cddcf5;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.contact-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.contact-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  border: 1px solid #cfd8e3;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font: inherit;
+  background: #fff;
+  color: #111827;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  outline: none;
+  border-color: #1a73e8;
+  box-shadow: 0 0 0 4px rgba(26,115,232,0.12);
+}
+
+.contact-form textarea {
+  resize: vertical;
+  min-height: 132px;
+}
+
+.contact-form button {
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #1a73e8, #1257b8);
+  color: white;
+  font: inherit;
+  font-weight: 700;
+  padding: 12px 16px;
+  cursor: pointer;
+}
+
+.contact-note {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.modal-company-name {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #607086;
+}
+
 /* ── Mobile (末尾に置くことでデスクトップルールより優先される) ── */
 @media (max-width: 768px) {
   #main { flex-direction: column; }
@@ -323,4 +525,33 @@ header h1 { font-size: 16px; font-weight: 600; }
     transition: height 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
   }
   #store-panel.expanded { height: 35dvh; }
+
+  header {
+    gap: 8px;
+  }
+
+  header h1 {
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  #count-badge {
+    display: none;
+  }
+
+  .modal-sheet {
+    align-items: flex-end;
+    padding: 10px;
+  }
+
+  .modal-card {
+    width: 100%;
+    max-height: 82dvh;
+    border-radius: 20px 20px 14px 14px;
+    padding: 18px;
+  }
+
+  .modal-header h2 {
+    font-size: 18px;
+  }
 }

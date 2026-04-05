@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>飯塚クーポンマップ</title>
+  <title>令和8年飯塚市生活応援クーポン券マップ</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div id="loading">地図を読み込み中...</div>
+<div id="loading">地図を読み込み中</div>
 
 <header>
   <button id="sidebar-toggle" title="一覧を開く">
@@ -20,8 +20,21 @@
     </svg>
   </button>
   <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C8.27 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-  <h1>飯塚クーポンマップ</h1>
+  <h1>令和8年飯塚市生活応援クーポン券マップ</h1>
   <div id="count-badge">― 件</div>
+  <div class="header-menu">
+    <button id="menu-toggle" title="メニューを開く" aria-expanded="false" aria-controls="header-menu-list">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+        <circle cx="12" cy="5" r="2"/>
+        <circle cx="12" cy="12" r="2"/>
+        <circle cx="12" cy="19" r="2"/>
+      </svg>
+    </button>
+    <div id="header-menu-list" class="header-menu-list" hidden>
+      <button type="button" class="menu-item" data-modal="about-modal">このHPについて</button>
+      <button type="button" class="menu-item" data-modal="contact-modal">お問い合わせ</button>
+    </div>
+  </div>
 </header>
 
 <div id="main">
@@ -73,13 +86,63 @@
 
     <div id="store-panel">
       <div id="sidebar-search">
-        <input id="search-input" type="search" placeholder="店舗名で検索…">
+        <input id="search-input" type="search" placeholder="店舗名で検索">
       </div>
       <div id="store-list"></div>
     </div>
   </div>
 
 </div>
+
+<div id="modal-backdrop" class="modal-backdrop" hidden></div>
+
+<section id="about-modal" class="modal-sheet" hidden aria-modal="true" role="dialog" aria-labelledby="about-title">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2 id="about-title">このHPについて</h2>
+      <button type="button" class="modal-close" data-close-modal>閉じる</button>
+    </div>
+    <p class="footer-copy">
+      制作者は AutoFor株式会社です。開発や更新の裏側は X と Qiita で発信しています。
+    </p>
+    <p class="footer-disclaimer">
+      このHPに掲載している情報は、AIを用いて作成しています。内容の正確性・最新性・完全性を保証するものではありません。
+    </p>
+    <div class="footer-links">
+      <a href="https://x.com/Kawashima_RPA" target="_blank" rel="noopener">X: @Kawashima_RPA</a>
+      <a href="https://qiita.com/Kawashima_RPA" target="_blank" rel="noopener">Qiita: Kawashima_RPA</a>
+    </div>
+    <p class="modal-company-name">AutoFor株式会社</p>
+  </div>
+</section>
+
+<section id="contact-modal" class="modal-sheet" hidden aria-modal="true" role="dialog" aria-labelledby="contact-title">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2 id="contact-title">お問い合わせ</h2>
+      <button type="button" class="modal-close" data-close-modal>閉じる</button>
+    </div>
+    <p class="footer-copy">
+      内容を入力すると、メールアプリが起動して <strong>seiya-kawashima@autofor.co.jp</strong> 宛ての下書きを作成します。
+    </p>
+    <form id="contact-form" class="contact-form">
+      <label>
+        お名前
+        <input id="contact-name" name="name" type="text" placeholder="例: 山田 太郎">
+      </label>
+      <label>
+        メールアドレス
+        <input id="contact-email" name="email" type="email" placeholder="example@example.com">
+      </label>
+      <label>
+        お問い合わせ内容
+        <textarea id="contact-message" name="message" rows="5" placeholder="ご相談内容をご記入ください" required></textarea>
+      </label>
+      <button type="submit">メールを作成する</button>
+      <p id="contact-note" class="contact-note">送信前にメール本文を確認してください。</p>
+    </form>
+  </div>
+</section>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/PapaParse@5.4.1/papaparse.min.js"></script>

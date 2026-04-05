@@ -163,6 +163,44 @@ function closeSidebar() {
   setTimeout(() => map.invalidateSize(), 310);
 }
 
+let activeModalId = null;
+
+function closeHeaderMenu() {
+  const menu = document.getElementById('header-menu-list');
+  const toggle = document.getElementById('menu-toggle');
+  menu.hidden = true;
+  toggle.setAttribute('aria-expanded', 'false');
+}
+
+function openHeaderMenu() {
+  const menu = document.getElementById('header-menu-list');
+  const toggle = document.getElementById('menu-toggle');
+  menu.hidden = false;
+  toggle.setAttribute('aria-expanded', 'true');
+}
+
+function openModal(modalId) {
+  const modal = document.getElementById(modalId);
+  const backdrop = document.getElementById('modal-backdrop');
+  if (!modal || !backdrop) return;
+  activeModalId = modalId;
+  modal.hidden = false;
+  backdrop.hidden = false;
+  document.body.style.overflow = 'hidden';
+  closeHeaderMenu();
+}
+
+function closeModal() {
+  const backdrop = document.getElementById('modal-backdrop');
+  if (activeModalId) {
+    const modal = document.getElementById(activeModalId);
+    if (modal) modal.hidden = true;
+  }
+  activeModalId = null;
+  if (backdrop) backdrop.hidden = true;
+  document.body.style.overflow = '';
+}
+
 // ── Event listeners ───────────────────────────────────────────────────────────
 log.info('イベントリスナー登録中...');
 
@@ -194,6 +232,63 @@ document.getElementById('list-fab')?.addEventListener('click', () => {
 document.getElementById('sidebar-overlay').addEventListener('click', () => {
   log.event('overlay クリック → closeSidebar');
   closeSidebar();
+});
+
+document.getElementById('menu-toggle').addEventListener('click', e => {
+  e.stopPropagation();
+  const expanded = document.getElementById('menu-toggle').getAttribute('aria-expanded') === 'true';
+  expanded ? closeHeaderMenu() : openHeaderMenu();
+});
+
+document.getElementById('header-menu-list').addEventListener('click', e => {
+  const btn = e.target.closest('.menu-item');
+  if (!btn) return;
+  openModal(btn.dataset.modal);
+});
+
+document.querySelectorAll('[data-close-modal]').forEach(btn => {
+  btn.addEventListener('click', closeModal);
+});
+
+document.getElementById('modal-backdrop').addEventListener('click', closeModal);
+
+document.addEventListener('click', e => {
+  const menu = document.querySelector('.header-menu');
+  if (menu && !menu.contains(e.target)) closeHeaderMenu();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeHeaderMenu();
+    closeModal();
+  }
+});
+
+document.getElementById('contact-form')?.addEventListener('submit', e => {
+  e.preventDefault();
+
+  const name = document.getElementById('contact-name')?.value.trim() || '';
+  const email = document.getElementById('contact-email')?.value.trim() || '';
+  const message = document.getElementById('contact-message')?.value.trim() || '';
+
+  if (!message) {
+    document.getElementById('contact-note').textContent = 'お問い合わせ内容を入力してください。';
+    return;
+  }
+
+  const subject = '飯塚クーポンマップについてのお問い合わせ';
+  const body = [
+    '飯塚クーポンマップについて問い合わせます。',
+    '',
+    `お名前: ${name || '未入力'}`,
+    `メールアドレス: ${email || '未入力'}`,
+    '',
+    'お問い合わせ内容:',
+    message,
+  ].join('\n');
+
+  window.location.href = `mailto:seiya-kawashima@autofor.co.jp?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  document.getElementById('contact-note').textContent = 'メールアプリを開けない場合は、宛先を手動でコピーしてください。';
 });
 
 // ── Filter accordion ──────────────────────────────────────────────────────────
