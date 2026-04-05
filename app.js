@@ -245,14 +245,134 @@ document.getElementById('contact-modal-open')?.addEventListener('click', openCon
 document.getElementById('contact-modal-close')?.addEventListener('click', closeContactModal);
 document.getElementById('contact-modal-backdrop')?.addEventListener('click', closeContactModal);
 
+function updateContactApplicantFields() {
+  const applicantType = document.getElementById('contact-applicant-type')?.value || '';
+  const category = document.getElementById('contact-category')?.value || '';
+  const isCorporate = applicantType === 'corporate';
+  const needsFixFields = category === '掲載情報の修正';
+  const needsDeleteFields = category === '掲載削除';
+  const needsNewStoreFields = category === '新規掲載';
+  const companyField = document.getElementById('contact-company-field');
+  const replyEmailField = document.getElementById('contact-reply-email-field');
+  const companyInput = document.getElementById('contact-company');
+  const replyEmailInput = document.getElementById('contact-reply-email');
+  const storeNameField = document.getElementById('contact-store-name-field');
+  const fixDetailField = document.getElementById('contact-fix-detail-field');
+  const deleteReasonField = document.getElementById('contact-delete-reason-field');
+  const newStoreNameField = document.getElementById('contact-new-store-name-field');
+  const storeUrlField = document.getElementById('contact-store-url-field');
+  const storeSummaryField = document.getElementById('contact-store-summary-field');
+  const storeNameInput = document.getElementById('contact-store-name');
+  const fixDetailInput = document.getElementById('contact-fix-detail');
+  const deleteReasonInput = document.getElementById('contact-delete-reason');
+  const newStoreNameInput = document.getElementById('contact-new-store-name');
+  const storeUrlInput = document.getElementById('contact-store-url');
+  const storeSummaryInput = document.getElementById('contact-store-summary');
+
+  companyField.hidden = !isCorporate;
+  replyEmailField.hidden = !isCorporate;
+  storeNameField.hidden = !(needsFixFields || needsDeleteFields);
+  fixDetailField.hidden = !needsFixFields;
+  deleteReasonField.hidden = !needsDeleteFields;
+  newStoreNameField.hidden = !needsNewStoreFields;
+  storeUrlField.hidden = !needsNewStoreFields;
+  storeSummaryField.hidden = !needsNewStoreFields;
+
+  if (!isCorporate) {
+    companyInput.value = '';
+    replyEmailInput.value = '';
+  }
+
+  if (!(needsFixFields || needsDeleteFields)) {
+    storeNameInput.value = '';
+  }
+
+  if (!needsFixFields) {
+    fixDetailInput.value = '';
+  }
+
+  if (!needsDeleteFields) {
+    deleteReasonInput.value = '';
+  }
+
+  if (!needsNewStoreFields) {
+    newStoreNameInput.value = '';
+    storeUrlInput.value = '';
+    storeSummaryInput.value = '';
+  }
+}
+
+document.getElementById('contact-applicant-type')?.addEventListener('change', updateContactApplicantFields);
+document.getElementById('contact-category')?.addEventListener('change', updateContactApplicantFields);
+updateContactApplicantFields();
+
 document.getElementById('contact-form')?.addEventListener('submit', e => {
   e.preventDefault();
 
   const submitButton = e.currentTarget.querySelector('button[type="submit"]');
+  const applicantType = document.getElementById('contact-applicant-type')?.value.trim() || '';
+  const category = document.getElementById('contact-category')?.value.trim() || '';
+  const company = applicantType === 'corporate'
+    ? (document.getElementById('contact-company')?.value.trim() || '')
+    : '';
+  const replyEmail = applicantType === 'corporate'
+    ? (document.getElementById('contact-reply-email')?.value.trim() || '')
+    : '';
+  const storeName = document.getElementById('contact-store-name')?.value.trim() || '';
+  const fixDetail = document.getElementById('contact-fix-detail')?.value.trim() || '';
+  const deleteReason = document.getElementById('contact-delete-reason')?.value.trim() || '';
+  const newStoreName = document.getElementById('contact-new-store-name')?.value.trim() || '';
+  const storeUrl = document.getElementById('contact-store-url')?.value.trim() || '';
+  const storeSummary = document.getElementById('contact-store-summary')?.value.trim() || '';
   const name = document.getElementById('contact-name')?.value.trim() || '';
   const email = document.getElementById('contact-email')?.value.trim() || '';
   const message = document.getElementById('contact-message')?.value.trim() || '';
   const note = document.getElementById('contact-note');
+
+  if (!applicantType) {
+    note.textContent = 'お問い合わせ種別を選択してください。';
+    return;
+  }
+
+  if (!category) {
+    note.textContent = 'お問い合わせカテゴリを選択してください。';
+    return;
+  }
+
+  if (applicantType === 'corporate' && !company) {
+    note.textContent = '御社名を入力してください。';
+    return;
+  }
+
+  if ((category === '掲載情報の修正' || category === '掲載削除') && !storeName) {
+    note.textContent = '対象の店舗名を入力してください。';
+    return;
+  }
+
+  if (category === '掲載情報の修正' && !fixDetail) {
+    note.textContent = 'どこを直したいかを入力してください。';
+    return;
+  }
+
+  if (category === '掲載削除' && !deleteReason) {
+    note.textContent = '削除理由を入力してください。';
+    return;
+  }
+
+  if (category === '新規掲載' && !newStoreName) {
+    note.textContent = '新規店舗名を入力してください。';
+    return;
+  }
+
+  if (!name) {
+    note.textContent = 'お名前を入力してください。';
+    return;
+  }
+
+  if (!email) {
+    note.textContent = 'メールアドレスを入力してください。';
+    return;
+  }
 
   if (!message) {
     note.textContent = 'お問い合わせ内容を入力してください。';
@@ -265,7 +385,21 @@ document.getElementById('contact-form')?.addEventListener('submit', e => {
   fetch(CONTACT_API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, email, message }),
+    body: JSON.stringify({
+      applicantType,
+      category,
+      company,
+      replyEmail,
+      storeName,
+      fixDetail,
+      deleteReason,
+      newStoreName,
+      storeUrl,
+      storeSummary,
+      name,
+      email,
+      message,
+    }),
   })
     .then(async response => {
       const data = await response.json().catch(() => ({}));

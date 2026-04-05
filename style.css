@@ -414,6 +414,7 @@ header h1 {
 }
 
 .contact-form input,
+.contact-form select,
 .contact-form textarea {
   width: 100%;
   border: 1px solid #cfd8e3;
@@ -425,6 +426,7 @@ header h1 {
 }
 
 .contact-form input:focus,
+.contact-form select:focus,
 .contact-form textarea:focus {
   outline: none;
   border-color: #1a73e8;
