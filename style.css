@@ -261,6 +261,30 @@ header h1 {
   min-height: 0;
 }
 
+#store-list-actions {
+  padding: 10px 12px 12px;
+  border-top: 1px solid #f0f0f0;
+  background: white;
+  flex-shrink: 0;
+}
+
+#load-more-button {
+  width: 100%;
+  border: 1px solid #cddcf5;
+  border-radius: 10px;
+  background: #edf4ff;
+  color: #1a73e8;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+#load-more-button:hover {
+  background: #e3efff;
+}
+
 .store-item {
   padding: 10px 16px;
   border-bottom: 1px solid #f5f5f5;

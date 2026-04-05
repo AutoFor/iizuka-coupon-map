@@ -16,6 +16,8 @@ let activeGroups  = new Set();
 let searchQuery   = '';
 let filteredStores = [];
 let markerMap = new Map();
+const SIDEBAR_PAGE_SIZE = 100;
+let visibleStoreCount = SIDEBAR_PAGE_SIZE;
 
 // ── Map ──────────────────────────────────────────────────────────────────────
 log.info('Leaflet マップ初期化中...');
@@ -99,6 +101,7 @@ function applyFilters() {
   log.ok(`マーカー配置完了: ${markerMap.size}件`);
 
   document.getElementById('count-badge').textContent = `${filteredStores.length} 件`;
+  visibleStoreCount = SIDEBAR_PAGE_SIZE;
   renderSidebar();
 }
 
@@ -106,9 +109,10 @@ function applyFilters() {
 function renderSidebar() {
   log.info(`renderSidebar: ${filteredStores.length}件 描画`);
   const list = document.getElementById('store-list');
+  const loadMoreButton = document.getElementById('load-more-button');
   list.innerHTML = '';
   document.getElementById('sidebar-count').textContent = `${filteredStores.length}件`;
-  filteredStores.forEach((s, i) => {
+  filteredStores.slice(0, visibleStoreCount).forEach((s, i) => {
     const couponTags = s.券種 === 'both'
       ? `<span class="store-tag digital">デジタル</span><span class="store-tag paper">紙</span>`
       : `<span class="store-tag ${s.券種}">${s.券種 === 'digital' ? 'デジタル' : '紙'}</span>`;
@@ -144,6 +148,13 @@ function renderSidebar() {
     div.addEventListener('touchend', onStoreClick);
     list.appendChild(div);
   });
+  if (loadMoreButton) {
+    const hasMore = visibleStoreCount < filteredStores.length;
+    loadMoreButton.hidden = !hasMore;
+    if (hasMore) {
+      loadMoreButton.textContent = `さらに表示 (${Math.min(SIDEBAR_PAGE_SIZE, filteredStores.length - visibleStoreCount)}件)`;
+    }
+  }
   log.ok('renderSidebar 完了');
 }
 
@@ -232,6 +243,12 @@ document.getElementById('list-fab')?.addEventListener('click', () => {
 document.getElementById('sidebar-overlay').addEventListener('click', () => {
   log.event('overlay クリック → closeSidebar');
   closeSidebar();
+});
+
+document.getElementById('load-more-button')?.addEventListener('click', () => {
+  visibleStoreCount = Math.min(visibleStoreCount + SIDEBAR_PAGE_SIZE, filteredStores.length);
+  log.event(`さらに表示: ${visibleStoreCount}件まで描画`);
+  renderSidebar();
 });
 
 document.getElementById('menu-toggle').addEventListener('click', e => {
