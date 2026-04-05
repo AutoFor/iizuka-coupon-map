@@ -20,8 +20,9 @@ let markerMap = new Map();
 // ── Map ──────────────────────────────────────────────────────────────────────
 log.info('Leaflet マップ初期化中...');
 const map = L.map('map').setView([33.640, 130.695], 13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/">CARTO</a>',
+  subdomains: 'abcd',
   maxZoom: 19,
 }).addTo(map);
 log.ok('マップ初期化完了');
