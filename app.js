@@ -36,15 +36,40 @@ map.addLayer(clusterGroup);
 log.info('layerGroup 追加済み');
 
 // ── Icons ────────────────────────────────────────────────────────────────────
-function makeIcon(color) {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">
-    <path d="M14 0C6.27 0 0 6.27 0 14c0 9.75 14 22 14 22S28 23.75 28 14C28 6.27 21.73 0 14 0z" fill="${color}"/>
-    <circle cx="14" cy="14" r="6" fill="white"/>
+const CATEGORY_STYLES = {
+  'グルメ・飲食':     { color: '#f97316', symbol: '<path fill="white" d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>' },
+  'ショッピング':      { color: '#8b5cf6', symbol: '<path fill="white" d="M18 6h-2c0-2.21-1.79-4-4-4S8 3.79 8 6H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-2c1.1 0 2 .9 2 2h-4c0-1.1.9-2 2-2zm6 16H6V8h2v2c0 .55.45 1 1 1s1-.45 1-1V8h4v2c0 .55.45 1 1 1s1-.45 1-1V8h2v12z"/>' },
+  '美容・健康':       { color: '#ec4899', symbol: '<path fill="white" d="M9 11.75c-.69 0-1.25.56-1.25 1.25s.56 1.25 1.25 1.25 1.25-.56 1.25-1.25-.56-1.25-1.25-1.25zm6 0c-.69 0-1.25.56-1.25 1.25s.56 1.25 1.25 1.25 1.25-.56 1.25-1.25-.56-1.25-1.25-1.25zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-.29.02-.58.05-.86 2.36-1.05 4.23-2.98 5.21-5.37C10.71 8.43 13.14 10 16 10c1.06 0 2.08-.25 2.99-.68C19.6 10.44 20 11.17 20 12c0 4.41-3.59 8-8 8z"/>' },
+  '住まい・暮らし':   { color: '#16a34a', symbol: '<path fill="white" d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>' },
+  'コンビニ・スーパー': { color: '#2563eb', symbol: '<path fill="white" d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96C5 16.1 6.1 17 7 17h11v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63H17c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 21.46 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>' },
+  'クルマ':           { color: '#64748b', symbol: '<path fill="white" d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>' },
+  'エンタメ・レジャー': { color: '#d97706', symbol: '<path fill="white" d="M18 3v2h-2V3H8v2H6V3H4v18h2v-2h2v2h8v-2h2v2h2V3h-2zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/>' },
+  'サービス':         { color: '#0891b2', symbol: '<path fill="white" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>' },
+  '教育・習い事':     { color: '#4f46e5', symbol: '<path fill="white" d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/>' },
+  '交通':             { color: '#0f8472', symbol: '<path fill="white" d="M12 2c-4.42 0-8 .5-8 4v9.5C4 17.43 5.57 19 7.5 19L6 20.5v.5h12v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-3.58-4-8-4zM7.5 17c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/>' },
+  '宿泊':             { color: '#dc2626', symbol: '<path fill="white" d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/>' },
+  'その他':           { color: '#9ca3af', symbol: '<circle fill="white" cx="12" cy="12" r="5"/><circle fill="white" cx="5" cy="12" r="2"/><circle fill="white" cx="19" cy="12" r="2"/>' },
+};
+
+function makeCategoryIcon(pinColor, symbolPath) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="0 0 32 40">
+    <path d="M16 0C7.16 0 0 7.16 0 16c0 11.14 16 24 16 24S32 27.14 32 16C32 7.16 24.84 0 16 0z" fill="${pinColor}" stroke="rgba(0,0,0,0.2)" stroke-width="0.5"/>
+    <svg x="4" y="4" width="24" height="24" viewBox="0 0 24 24">${symbolPath}</svg>
   </svg>`;
-  return L.divIcon({ html: svg, className: '', iconSize: [28,36], iconAnchor: [14,36], popupAnchor: [0,-36] });
+  return L.divIcon({ html: svg, className: '', iconSize: [32,40], iconAnchor: [16,40], popupAnchor: [0,-40] });
 }
-const icons = { digital: makeIcon('#1a73e8'), paper: makeIcon('#b45309'), both: makeIcon('#16a34a') };
-log.info('アイコン生成完了', Object.keys(icons));
+
+const categoryIcons = {};
+Object.entries(CATEGORY_STYLES).forEach(([cat, { color, symbol }]) => {
+  categoryIcons[cat] = makeCategoryIcon(color, symbol);
+});
+// 券種フォールバック用
+const couponIcons = {
+  digital: makeCategoryIcon('#0f8472', '<path fill="white" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>'),
+  paper:   makeCategoryIcon('#b45309', '<path fill="white" d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>'),
+  both:    makeCategoryIcon('#16a34a', '<path fill="white" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>'),
+};
+log.info('カテゴリアイコン生成完了', Object.keys(categoryIcons));
 
 // ── Filter & render ───────────────────────────────────────────────────────────
 function applyFilters() {
@@ -74,10 +99,11 @@ function applyFilters() {
       markerErrors++;
       return;
     }
-    const marker = L.marker([s.lat, s.lng], { icon: icons[s.券種] || icons.digital });
-    if (!icons[s.券種]) {
-      log.warn(`未知の券種 "${s.券種}": [${i}] ${s.店舗名称} → digital アイコンで代替`);
+    const icon = categoryIcons[s.display_category] || couponIcons[s.券種] || couponIcons.digital;
+    if (!categoryIcons[s.display_category]) {
+      log.warn(`未知カテゴリ "${s.display_category}": [${i}] ${s.店舗名称} → 券種アイコンで代替`);
     }
+    const marker = L.marker([s.lat, s.lng], { icon });
     const couponTags = s.券種 === 'both'
       ? `<span class="popup-tag digital">デジタル</span><span class="popup-tag paper">紙</span>`
       : `<span class="popup-tag ${s.券種}">${s.券種 === 'digital' ? 'デジタル' : '紙'}</span>`;
@@ -96,7 +122,7 @@ function applyFilters() {
       ${s.phone ? `<div class="popup-phone"><a href="tel:${s.phone}">${s.phone}</a></div>` : ''}
       <div class="popup-tags">
         ${couponTags}
-        ${s.display_category ? `<span class="popup-tag cat">${s.display_category}</span>` : ''}
+        ${s.display_category ? `<span class="popup-tag cat" style="background:${CATEGORY_STYLES[s.display_category]?.color || 'var(--dark)'}">${s.display_category}</span>` : ''}
         ${s.エリア ? `<span class="popup-tag area">${s.エリア}</span>` : ''}
       </div>
       ${linkItems.length ? `<div class="popup-links">${linkItems.join('')}</div>` : ''}`);
@@ -142,7 +168,7 @@ function renderSidebar() {
       ${s.description ? `<div class="store-item-desc">${s.description}</div>` : ''}
       <div class="store-item-tags">
         ${couponTags}
-        ${s.display_category ? `<span class="store-tag cat">${s.display_category}</span>` : ''}
+        ${s.display_category ? `<span class="store-tag cat" style="background:${CATEGORY_STYLES[s.display_category]?.color || 'var(--dark)'}">${s.display_category}</span>` : ''}
       </div>`;
     const onStoreClick = (e) => {
       e.preventDefault();
