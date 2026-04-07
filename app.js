@@ -402,56 +402,36 @@ document.getElementById('contact-form')?.addEventListener('submit', e => {
   const email = document.getElementById('contact-email')?.value.trim() || '';
   const message = document.getElementById('contact-message')?.value.trim() || '';
   const note = document.getElementById('contact-note');
+  const errorBox = document.getElementById('contact-error');
 
-  if (!applicantType) {
-    note.textContent = 'お問い合わせ種別を選択してください。';
+  // バリデーション：エラーフィールドIDとメッセージのペア
+  const checks = [
+    { id: 'contact-applicant-type', msg: 'お問い合わせ種別を選択してください。', cond: !applicantType },
+    { id: 'contact-category', msg: 'お問い合わせカテゴリを選択してください。', cond: !category },
+    { id: 'contact-company', msg: '御社名を入力してください。', cond: applicantType === 'corporate' && !company },
+    { id: 'contact-store-name', msg: '対象の店舗名を入力してください。', cond: (category === '掲載情報の修正' || category === '掲載削除') && !storeName },
+    { id: 'contact-fix-detail', msg: 'どこを直したいかを入力してください。', cond: category === '掲載情報の修正' && !fixDetail },
+    { id: 'contact-delete-reason', msg: '削除理由を入力してください。', cond: category === '掲載削除' && !deleteReason },
+    { id: 'contact-new-store-name', msg: '新規店舗名を入力してください。', cond: category === '新規掲載' && !newStoreName },
+    { id: 'contact-name', msg: 'お名前を入力してください。', cond: !name },
+    { id: 'contact-email', msg: 'メールアドレスを入力してください。', cond: !email },
+    { id: 'contact-message', msg: 'お問い合わせ内容を入力してください。', cond: !message },
+  ];
+
+  // 赤枠リセット
+  checks.forEach(({ id }) => {
+    document.getElementById(id)?.classList.remove('input-error');
+  });
+
+  const failed = checks.find(c => c.cond);
+  if (failed) {
+    errorBox.textContent = failed.msg;
+    errorBox.hidden = false;
+    document.getElementById(failed.id)?.classList.add('input-error');
+    document.getElementById(failed.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
-
-  if (!category) {
-    note.textContent = 'お問い合わせカテゴリを選択してください。';
-    return;
-  }
-
-  if (applicantType === 'corporate' && !company) {
-    note.textContent = '御社名を入力してください。';
-    return;
-  }
-
-  if ((category === '掲載情報の修正' || category === '掲載削除') && !storeName) {
-    note.textContent = '対象の店舗名を入力してください。';
-    return;
-  }
-
-  if (category === '掲載情報の修正' && !fixDetail) {
-    note.textContent = 'どこを直したいかを入力してください。';
-    return;
-  }
-
-  if (category === '掲載削除' && !deleteReason) {
-    note.textContent = '削除理由を入力してください。';
-    return;
-  }
-
-  if (category === '新規掲載' && !newStoreName) {
-    note.textContent = '新規店舗名を入力してください。';
-    return;
-  }
-
-  if (!name) {
-    note.textContent = 'お名前を入力してください。';
-    return;
-  }
-
-  if (!email) {
-    note.textContent = 'メールアドレスを入力してください。';
-    return;
-  }
-
-  if (!message) {
-    note.textContent = 'お問い合わせ内容を入力してください。';
-    return;
-  }
+  errorBox.hidden = true;
 
   note.textContent = '送信中です。しばらくお待ちください。';
   submitButton.disabled = true;
