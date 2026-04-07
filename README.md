@@ -78,4 +78,3 @@ env TARGET_URL=http://127.0.0.1:8081 npm run dump:mobile
 ## ライセンス
 
 掲載データは[飯塚市公開情報](https://www.city.iizuka.lg.jp/soshiki/70/14632.html)を元にしています。
-コードの利用については AutoFor株式会社までお問い合わせください。
