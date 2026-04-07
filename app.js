@@ -195,9 +195,14 @@ function renderSidebar() {
   });
   if (loadMoreButton) {
     const hasMore = visibleStoreCount < orderedStores.length;
-    loadMoreButton.hidden = !hasMore;
     if (hasMore) {
       loadMoreButton.textContent = `さらに表示 (${Math.min(SIDEBAR_PAGE_SIZE, orderedStores.length - visibleStoreCount)}件)`;
+    }
+    if (isMobile()) {
+      loadMoreButton.hidden = false;
+      setupMobileLoadMore(hasMore);
+    } else {
+      loadMoreButton.hidden = !hasMore;
     }
   }
   log.ok('renderSidebar 完了');
@@ -205,6 +210,24 @@ function renderSidebar() {
 
 // ── Sidebar open/close ────────────────────────────────────────────────────────
 function isMobile() { return window.innerWidth <= 768; }
+
+// ── Mobile load-more scroll trigger ───────────────────────────────────────────
+let _mobileScrollHandler = null;
+function setupMobileLoadMore(hasMore) {
+  const storeList = document.getElementById('store-list');
+  const actions   = document.getElementById('store-list-actions');
+  if (_mobileScrollHandler) {
+    storeList.removeEventListener('scroll', _mobileScrollHandler);
+    _mobileScrollHandler = null;
+  }
+  actions.classList.remove('reveal');
+  if (!hasMore) return;
+  _mobileScrollHandler = () => {
+    const nearBottom = storeList.scrollTop + storeList.clientHeight >= storeList.scrollHeight - 60;
+    if (nearBottom) actions.classList.add('reveal');
+  };
+  storeList.addEventListener('scroll', _mobileScrollHandler);
+}
 
 function openSidebar() {
   log.event('openSidebar');
@@ -268,12 +291,31 @@ map.on('moveend zoomend', () => {
 });
 
 document.getElementById('load-more-button')?.addEventListener('click', () => {
+  if (isMobile()) {
+    document.getElementById('store-list-actions').classList.remove('reveal');
+  }
   visibleStoreCount = Math.min(visibleStoreCount + SIDEBAR_PAGE_SIZE, filteredStores.length);
   log.event(`さらに表示: ${visibleStoreCount}件まで描画`);
   renderSidebar();
 });
 
 document.getElementById('contact-modal-open')?.addEventListener('click', openContactModal);
+document.getElementById('contact-modal-open-2')?.addEventListener('click', openContactModal);
+
+document.getElementById('info-btn')?.addEventListener('click', () => {
+  const dropdown = document.getElementById('info-dropdown');
+  const headerHeight = document.querySelector('header').getBoundingClientRect().bottom;
+  dropdown.style.top = headerHeight + 'px';
+  dropdown.classList.toggle('open');
+});
+// info-dropdown 外クリックで閉じる
+document.addEventListener('click', (e) => {
+  const dropdown = document.getElementById('info-dropdown');
+  if (!dropdown.classList.contains('open')) return;
+  if (!dropdown.contains(e.target) && e.target.id !== 'info-btn' && !e.target.closest('#info-btn')) {
+    dropdown.classList.remove('open');
+  }
+});
 document.getElementById('contact-modal-close')?.addEventListener('click', closeContactModal);
 document.getElementById('contact-modal-backdrop')?.addEventListener('click', closeContactModal);
 

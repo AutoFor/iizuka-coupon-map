@@ -17,7 +17,32 @@
   <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C8.27 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
   <h1>令和8年飯塚市生活応援クーポン券マップ</h1>
   <div id="count-badge">― 件</div>
+  <button id="info-btn" type="button" aria-label="このHPについて">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+  </button>
 </header>
+
+<div id="info-dropdown">
+  <div class="info-panel-body">
+    <p class="footer-copy">
+      制作者は AutoFor株式会社です。開発や更新の裏側は X と Qiita で発信しています。
+    </p>
+    <p class="footer-copy">
+      このHPは、<a href="https://www.city.iizuka.lg.jp/soshiki/70/14632.html" target="_blank" rel="noopener">飯塚市が公開しているPDF</a>を元に作成しました。
+    </p>
+    <p class="footer-disclaimer">
+      このHPに掲載している情報は、AIを用いて作成しています。内容の正確性・最新性・完全性を保証するものではありません。
+    </p>
+    <div class="footer-links">
+      <a href="https://x.com/Kawashima_RPA" target="_blank" rel="noopener">X: @Kawashima_RPA</a>
+      <a href="https://qiita.com/Kawashima_RPA" target="_blank" rel="noopener">Qiita: Kawashima_RPA</a>
+      <a href="https://github.com/AutoFor/iizuka-coupon-map" target="_blank" rel="noopener">GitHub</a>
+    </div>
+    <p class="modal-company-name"><a href="https://autofor.co.jp/" target="_blank" rel="noopener">AutoFor株式会社</a></p>
+    <hr class="info-divider">
+    <button id="contact-modal-open-2" class="contact-open-button" type="button">お問い合わせはこちら</button>
+  </div>
+</div>
 
 <div id="main">
   <div id="sidebar-overlay"></div>
@@ -27,14 +52,27 @@
   <div id="side-panel">
     <div id="filter-bar">
 
-      <!-- 券種トリガー行 -->
-      <div class="filter-trigger" id="coupon-trigger-row">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <span class="filter-label">券種</span>
-        <span id="coupon-trigger-label">すべて表示</span>
-        <svg class="filter-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      <!-- トリガー行（2列） -->
+      <div id="filter-triggers">
+        <div class="filter-group">
+          <div class="filter-trigger" id="coupon-trigger-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span class="filter-label">券種</span>
+            <span id="coupon-trigger-label">すべて表示</span>
+            <svg class="filter-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+        <div class="filter-group">
+          <div class="filter-trigger" id="cat-trigger-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="12" y1="18" x2="20" y2="18"/></svg>
+            <span class="filter-label">カテゴリ</span>
+            <span id="cat-trigger-label">すべて</span>
+            <svg class="filter-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
       </div>
-      <!-- 券種展開パネル -->
+
+      <!-- 展開パネル（フル幅） -->
       <div class="filter-expand" id="coupon-expand">
         <div class="filter-expand-chips" id="coupon-sheet-chips">
           <button class="chip active" data-coupon="all">すべて表示</button>
@@ -43,15 +81,6 @@
           <button class="chip" data-coupon="paper">紙のみ</button>
         </div>
       </div>
-
-      <!-- カテゴリトリガー行 -->
-      <div class="filter-trigger" id="cat-trigger-row">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="12" y1="18" x2="20" y2="18"/></svg>
-        <span class="filter-label">カテゴリ</span>
-        <span id="cat-trigger-label">すべて</span>
-        <svg class="filter-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-      </div>
-      <!-- カテゴリ展開パネル -->
       <div class="filter-expand" id="cat-expand">
         <div class="filter-expand-chips" id="cat-sheet-chips"></div>
       </div>
@@ -99,7 +128,7 @@
             <a href="https://qiita.com/Kawashima_RPA" target="_blank" rel="noopener">Qiita: Kawashima_RPA</a>
             <a href="https://github.com/AutoFor/iizuka-coupon-map" target="_blank" rel="noopener">GitHub</a>
           </div>
-          <p class="modal-company-name">AutoFor株式会社</p>
+          <p class="modal-company-name"><a href="https://autofor.co.jp/" target="_blank" rel="noopener">AutoFor株式会社</a></p>
           <hr class="info-divider">
           <button id="contact-modal-open" class="contact-open-button" type="button">お問い合わせはこちら</button>
         </div>
