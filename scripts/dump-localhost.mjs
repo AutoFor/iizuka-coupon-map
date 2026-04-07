@@ -85,6 +85,44 @@ async function runCategoryFilterTest(page, profileName, outputDir) {
   return test;
 }
 
+// ── info-btn クリックテスト（モバイルのみ） ────────────────────────────────
+async function runInfoBtnTest(page, outputDir) {
+  const test = { test: 'info-btn-click', profile: 'mobile' };
+
+  // info-btn が表示されているか
+  const btnVisible = await page.$eval('#info-btn', el => {
+    const style = window.getComputedStyle(el);
+    return style.display !== 'none';
+  });
+  test.infoBtnVisible = btnVisible;
+
+  if (!btnVisible) {
+    test.pass = false;
+    test.error = 'info-btn が非表示';
+    return test;
+  }
+
+  // クリック前は info-dropdown が閉じているか
+  test.dropdownBeforeClick = await page.$eval('#info-dropdown', el => el.classList.contains('open'));
+
+  // クリック
+  await page.click('#info-btn');
+  await page.waitForTimeout(300);
+
+  // クリック後に open クラスが付いているか
+  test.dropdownAfterClick = await page.$eval('#info-dropdown', el => el.classList.contains('open'));
+
+  // 「このHPについて」的なテキストが見えているか
+  test.dropdownText = await page.$eval('#info-dropdown', el => el.textContent.trim().slice(0, 40));
+
+  // スクリーンショット
+  await page.screenshot({ path: `${outputDir}/screenshot-info-dropdown.png`, fullPage: false });
+  test.screenshot = 'screenshot-info-dropdown.png';
+
+  test.pass = !test.dropdownBeforeClick && test.dropdownAfterClick;
+  return test;
+}
+
 // ── メイン ────────────────────────────────────────────────────────────────────
 const browser = await chromium.launch({ headless: true });
 const results = [];
@@ -186,6 +224,16 @@ for (const profile of selectedProfiles) {
     interactionTests.push(catTest);
   } catch (err) {
     interactionTests.push({ test: `category-filter[${TEST_CATEGORY}]`, profile: profile.name, pass: false, error: err.message });
+  }
+  if (profile.name === 'mobile') {
+    try {
+      await page.reload({ waitUntil: 'domcontentloaded' });
+      await page.waitForTimeout(2000);
+      const infoTest = await runInfoBtnTest(page, outputDir);
+      interactionTests.push(infoTest);
+    } catch (err) {
+      interactionTests.push({ test: 'info-btn-click', profile: 'mobile', pass: false, error: err.message });
+    }
   }
   await fs.writeFile(
     path.join(outputDir, 'interaction-tests.json'),
