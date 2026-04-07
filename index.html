@@ -183,10 +183,12 @@
       <h2 id="contact-modal-title">お問い合わせ</h2>
       <button id="contact-modal-close" class="contact-modal-close" type="button" aria-label="閉じる">閉じる</button>
     </div>
-    <p class="footer-copy">
-      内容を入力すると、メールアプリが起動してお問い合わせ用の下書きを作成します。
-    </p>
     <form id="contact-form" class="contact-form">
+      <div class="contact-form-body">
+        <p class="footer-copy">
+          内容を入力して送信してください。通常2営業日以内にご返信します。
+        </p>
+        <p id="contact-error" class="contact-error" hidden></p>
       <label>
         お問い合わせ種別
         <select id="contact-applicant-type" name="applicantType" required>
@@ -252,8 +254,11 @@
         お問い合わせ内容
         <textarea id="contact-message" name="message" rows="5" placeholder="ご相談内容をご記入ください" required></textarea>
       </label>
-      <button type="submit">メールを作成する</button>
-      <p id="contact-note" class="contact-note">送信前にメール本文を確認してください。</p>
+      </div><!-- /.contact-form-body -->
+      <div class="contact-form-footer">
+        <button type="submit">送信する</button>
+        <p id="contact-note" class="contact-note"></p>
+      </div>
     </form>
   </div>
 </section>
