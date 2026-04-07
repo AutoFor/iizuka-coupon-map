@@ -243,11 +243,17 @@ document.getElementById('search-input').addEventListener('input', e => {
 });
 
 document.getElementById('sidebar-header').addEventListener('click', () => {
-  if (!isMobile()) return;
-  const expanded = document.getElementById('store-panel').classList.toggle('expanded');
-  document.getElementById('sidebar-header').classList.toggle('expanded-arrow', expanded);
-  log.event(`sidebar-header タップ → store-panel ${expanded ? '展開' : '折りたたみ'}`);
-  setTimeout(() => map.invalidateSize(), 320);
+  if (isMobile()) {
+    const expanded = document.getElementById('store-panel').classList.toggle('expanded');
+    document.getElementById('sidebar-header').classList.toggle('expanded-arrow', expanded);
+    log.event(`sidebar-header タップ → store-panel ${expanded ? '展開' : '折りたたみ'}`);
+    setTimeout(() => map.invalidateSize(), 320);
+  } else {
+    const collapsed = document.getElementById('store-panel').classList.toggle('collapsed');
+    document.getElementById('sidebar-header').classList.toggle('panel-collapsed', collapsed);
+    log.event(`sidebar-header クリック → store-panel ${collapsed ? '折りたたみ' : '展開'}`);
+    setTimeout(() => map.invalidateSize(), 320);
+  }
 });
 
 document.getElementById('sidebar-overlay').addEventListener('click', () => {

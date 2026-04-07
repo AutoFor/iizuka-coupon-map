@@ -50,10 +50,8 @@ header h1 {
 }
 
 #count-badge {
-  background: rgba(255,255,255,0.25);
-  border-radius: var(--radius-pill);
-  padding: 2px 10px;
   font-size: 13px;
+  opacity: 0.8;
 }
 
 /* ── Filter bar ── */
@@ -102,7 +100,7 @@ header h1 {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.25s ease;
-  background: var(--surface);
+  background: var(--white);
 }
 .filter-expand.open { max-height: 1200px; }
 
@@ -182,7 +180,7 @@ header h1 {
   padding: 7px 10px;
   font-size: 13px;
   outline: none;
-  background: var(--bg);
+  background: var(--white);
   font-family: inherit;
   color: var(--text);
 }
@@ -205,10 +203,7 @@ header h1 {
 #sidebar-header .header-right { display: flex; align-items: center; gap: 8px; }
 #sidebar-count { color: var(--text-muted); font-weight: 400; font-size: 12px; }
 #sidebar-toggle-arrow {
-  font-size: 11px;
-  color: var(--text-muted);
   transition: transform 0.3s;
-  display: none;
 }
 
 #store-panel {
@@ -245,19 +240,20 @@ header h1 {
 
 #load-more-button {
   width: 100%;
-  border: 1px solid var(--primary-light);
-  border-radius: var(--radius-lg);
-  background: var(--primary-bg);
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
   color: var(--primary);
   font: inherit;
   font-size: 13px;
   font-weight: 700;
   padding: 10px 12px;
   cursor: pointer;
+  transition: background 0.15s;
 }
 
 #load-more-button:hover {
-  background: var(--primary-light);
+  background: var(--primary-bg);
 }
 
 .panel-section {
@@ -285,9 +281,9 @@ header h1 {
 .contact-open-button {
   display: inline-flex;
   align-items: center;
-  border: 1px solid var(--primary-light);
-  border-radius: var(--radius-lg);
-  background: var(--primary-bg);
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
   color: var(--primary);
   font: inherit;
   font-size: 13px;
@@ -295,10 +291,11 @@ header h1 {
   padding: 10px 14px;
   cursor: pointer;
   justify-self: start;
+  transition: background 0.15s;
 }
 
 .contact-open-button:hover {
-  background: var(--primary-light);
+  background: var(--primary-bg);
 }
 
 .store-item {
@@ -397,34 +394,38 @@ header h1 {
   line-height: 1.7;
   color: var(--text-mid);
 }
+.footer-copy a {
+  color: var(--primary);
+  text-decoration: underline;
+}
 
 .footer-disclaimer {
-  margin-top: 12px;
-  padding: 12px 14px;
-  border-radius: var(--radius-md);
-  background: #fff7e8;
-  border: 1px solid #f3d7a1;
-  font-size: 13px;
+  margin-top: 4px;
+  font-size: 12px;
   line-height: 1.7;
-  color: #8a5a00;
+  color: var(--text-muted);
 }
 
 .footer-links {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  flex-direction: column;
+  gap: 4px;
   margin-top: 16px;
 }
 
 .footer-links a {
   text-decoration: none;
   color: var(--primary);
-  background: var(--primary-bg);
-  border: 1px solid var(--primary-light);
-  border-radius: var(--radius-pill);
+  background: transparent;
+  border-radius: var(--radius-md);
   padding: 8px 14px;
   font-size: 13px;
   font-weight: 600;
+  transition: background 0.15s;
+}
+
+.footer-links a:hover {
+  background: var(--primary-bg);
 }
 
 .contact-form {
@@ -548,6 +549,20 @@ header h1 {
   cursor: pointer;
 }
 
+/* ── Desktop store-panel collapse ── */
+@media (min-width: 769px) {
+  #store-panel {
+    transition: max-height 0.3s ease, overflow 0.3s;
+    max-height: 10000px;
+  }
+  #store-panel.collapsed {
+    max-height: 0 !important;
+    flex: none !important;
+    overflow: hidden !important;
+  }
+  #sidebar-header.panel-collapsed #sidebar-toggle-arrow { transform: rotate(180deg); }
+}
+
 /* ── Mobile (末尾に置くことでデスクトップルールより優先される) ── */
 @media (max-width: 768px) {
   #main { flex-direction: column; }
@@ -570,7 +585,6 @@ header h1 {
   }
   #side-panel.closed { width: 100%; }
 
-  #sidebar-toggle-arrow { display: inline; }
   #sidebar-header.expanded-arrow #sidebar-toggle-arrow { transform: rotate(180deg); }
 
   #store-panel {
