@@ -62,7 +62,7 @@
       店舗一覧
       <div class="header-right">
         <span id="sidebar-count"></span>
-        <span id="sidebar-toggle-arrow">▲</span>
+        <svg id="sidebar-toggle-arrow" class="filter-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
     </div>
 
@@ -76,28 +76,32 @@
           <button id="load-more-button" type="button" hidden>さらに表示</button>
         </div>
       </div>
+    </div>
 
-      <div class="panel-section">
-        <div class="filter-trigger" id="site-trigger-row">
-          <span class="section-title">このHPについて・お問い合わせ</span>
-          <svg class="filter-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </div>
-        <div class="filter-expand" id="site-expand">
-          <div class="info-panel-body">
-            <p class="footer-copy">
-              制作者は AutoFor株式会社です。開発や更新の裏側は X と Qiita で発信しています。
-            </p>
-            <p class="footer-disclaimer">
-              このHPに掲載している情報は、AIを用いて作成しています。内容の正確性・最新性・完全性を保証するものではありません。
-            </p>
-            <div class="footer-links">
-              <a href="https://x.com/Kawashima_RPA" target="_blank" rel="noopener">X: @Kawashima_RPA</a>
-              <a href="https://qiita.com/Kawashima_RPA" target="_blank" rel="noopener">Qiita: Kawashima_RPA</a>
-            </div>
-            <p class="modal-company-name">AutoFor株式会社</p>
-            <hr class="info-divider">
-            <button id="contact-modal-open" class="contact-open-button" type="button">お問い合わせはこちら</button>
+    <div class="panel-section">
+      <div class="filter-trigger" id="site-trigger-row">
+        <span class="section-title">このHPについて</span>
+        <svg class="filter-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="filter-expand" id="site-expand">
+        <div class="info-panel-body">
+          <p class="footer-copy">
+            制作者は AutoFor株式会社です。開発や更新の裏側は X と Qiita で発信しています。
+          </p>
+          <p class="footer-copy">
+            このHPは、<a href="https://www.city.iizuka.lg.jp/soshiki/70/14632.html" target="_blank" rel="noopener">飯塚市が公開しているPDF</a>を元に作成しました。
+          </p>
+          <p class="footer-disclaimer">
+            このHPに掲載している情報は、AIを用いて作成しています。内容の正確性・最新性・完全性を保証するものではありません。
+          </p>
+          <div class="footer-links">
+            <a href="https://x.com/Kawashima_RPA" target="_blank" rel="noopener">X: @Kawashima_RPA</a>
+            <a href="https://qiita.com/Kawashima_RPA" target="_blank" rel="noopener">Qiita: Kawashima_RPA</a>
+            <a href="https://github.com/AutoFor/iizuka-coupon-map" target="_blank" rel="noopener">GitHub</a>
           </div>
+          <p class="modal-company-name">AutoFor株式会社</p>
+          <hr class="info-divider">
+          <button id="contact-modal-open" class="contact-open-button" type="button">お問い合わせはこちら</button>
         </div>
       </div>
     </div>
