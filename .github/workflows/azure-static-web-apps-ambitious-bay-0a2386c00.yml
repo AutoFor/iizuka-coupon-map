@@ -23,7 +23,7 @@ jobs:
         run: |
           rm -rf swa-static
           mkdir -p swa-static
-          cp index.html app.js style.css swa-static/
+          cp index.html app.js style.css ogp.png swa-static/
           cp -R csv pdf swa-static/
       - name: Build And Deploy
         id: builddeploy
