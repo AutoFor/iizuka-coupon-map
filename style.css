@@ -39,8 +39,9 @@ header {
   align-items: center;
   gap: 10px;
   box-shadow: 0 2px 8px rgba(15,132,114,0.3);
-  z-index: 200;
+  z-index: 1000;
   flex-shrink: 0;
+  position: relative;
 }
 header h1 {
   font-size: 16px;
@@ -53,6 +54,30 @@ header h1 {
   font-size: 13px;
   opacity: 0.8;
 }
+
+#info-btn {
+  display: none;
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#info-dropdown {
+  display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  z-index: 10000;
+  overflow-y: auto;
+  max-height: 70dvh;
+}
+#info-dropdown.open { display: block; }
 
 /* ── Filter bar ── */
 #filter-bar {
@@ -236,6 +261,7 @@ header h1 {
   padding: 10px 12px 12px;
   background: var(--white);
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 #load-more-button {
@@ -498,6 +524,13 @@ header h1 {
   letter-spacing: 0.04em;
   color: var(--text-muted);
 }
+.modal-company-name a {
+  color: inherit;
+  text-decoration: none;
+}
+.modal-company-name a:hover {
+  text-decoration: underline;
+}
 
 .contact-modal-backdrop {
   position: fixed;
@@ -567,7 +600,7 @@ header h1 {
 @media (max-width: 768px) {
   #main { flex-direction: column; }
 
-  #filter-bar {
+  #filter-triggers {
     display: grid;
     grid-template-columns: 1fr 1fr;
   }
@@ -596,6 +629,9 @@ header h1 {
 
   #sidebar-header.expanded-arrow #sidebar-toggle-arrow { transform: rotate(180deg); }
 
+  #info-btn { display: flex; }
+  .panel-section { display: none; }
+
   #store-panel {
     flex: none;
     overflow: hidden;
@@ -603,6 +639,27 @@ header h1 {
     transition: height 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
   }
   #store-panel.expanded { height: 42dvh; }
+
+  #sidebar-search {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+  }
+  #store-panel.expanded #sidebar-search {
+    max-height: 60px;
+    padding: 8px 12px;
+  }
+
+  #store-list-actions {
+    max-height: 0;
+    padding: 0 12px;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+  }
+  #store-list-actions.reveal {
+    max-height: 80px;
+    padding: 10px 12px 12px;
+  }
 
   #store-list {
     padding: 4px 8px;
